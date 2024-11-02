@@ -9,9 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "drivers")
+@NoArgsConstructor
 public class User extends BaseTimeEntity{
 
     @Id
@@ -41,4 +44,13 @@ public class User extends BaseTimeEntity{
     private BigDecimal carLocationLng; //차고지 경도
 
     private LocalDateTime approvedDate; //승인날짜
+
+    @Builder
+    public User(String name, String email, String phoneNumber, String password,String carLocation) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.carLocation = carLocation;
+    }
 }
