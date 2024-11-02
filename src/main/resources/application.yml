@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: local, local-secret
+---
+spring:
+  application:
+    name: carru
+---
+spring:
+  config:
+    activate:
+      on-profile: local-secret
