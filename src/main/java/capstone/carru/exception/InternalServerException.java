@@ -1,6 +1,6 @@
 package capstone.carru.exception;
 
-import capstone.carru.driver.dto.ErrorCode;
+import capstone.carru.dto.ErrorCode;
 
 public class InternalServerException extends GeneralException {
 

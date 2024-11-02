@@ -1,4 +1,4 @@
-package capstone.carru.driver.entity;
+package capstone.carru.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

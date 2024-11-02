@@ -1,10 +1,10 @@
-package capstone.carru.driver.service;
+package capstone.carru.service;
 
-import static capstone.carru.driver.dto.ErrorCode.INVALID_DUPLICATED_EMAIL;
+import static capstone.carru.dto.ErrorCode.INVALID_DUPLICATED_EMAIL;
 
-import capstone.carru.driver.dto.CreateUserRequest;
-import capstone.carru.driver.entity.User;
-import capstone.carru.driver.repository.UserRepository;
+import capstone.carru.dto.CreateUserRequest;
+import capstone.carru.entity.User;
+import capstone.carru.repository.UserRepository;
 import capstone.carru.exception.InvalidException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

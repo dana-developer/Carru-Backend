@@ -1,4 +1,4 @@
-package capstone.carru.driver.dto;
+package capstone.carru.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

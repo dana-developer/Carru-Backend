@@ -1,4 +1,4 @@
-package capstone.carru.driver.dto;
+package capstone.carru.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
