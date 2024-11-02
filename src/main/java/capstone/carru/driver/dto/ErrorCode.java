@@ -9,6 +9,7 @@ public enum ErrorCode {
      */
     INVALID("BR000", "잘못된 요청입니다."),
     INVALID_AUTH_TOKEN("BR001", "만료되거나 잘못된 엑세스 토큰입니다."),
+    INVALID_DUPLICATED_EMAIL("BR002", "이미 사용중인 이메일입니다."),
 
     /**
      * 404 Not Found (존재하지 않는 리소스)
