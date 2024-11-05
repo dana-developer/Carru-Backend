@@ -28,7 +28,7 @@ public class UserService {
                 .password(createUserRequest.getPassword())
                 .name(createUserRequest.getName())
                 .phoneNumber(createUserRequest.getPhoneNumber())
-                .carLocation(createUserRequest.getCarLocation())
+                .location(createUserRequest.getCarLocation())
                 .build();
 
         userRepository.save(user);

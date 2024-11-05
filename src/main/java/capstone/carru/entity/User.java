@@ -39,13 +39,13 @@ public class User extends BaseTimeEntity{
     private String password;
 
     @Column(length = 2083)
-    private String carLocation; //차고지 한글 주소
+    private String location; //차고지 또는 물류 창고 한글 주소
 
     @Column(precision = 9, scale = 6)
-    private BigDecimal carLocationLat; //차고지 위도
+    private BigDecimal locationLat; //차고지 또는 물류 창고 위도
 
     @Column(precision = 9, scale = 6)
-    private BigDecimal carLocationLng; //차고지 경도
+    private BigDecimal locationLng; //차고지 또는 물류 창고 경도
 
     private LocalDateTime approvedDate; //승인 날짜
 
@@ -61,11 +61,11 @@ public class User extends BaseTimeEntity{
     private List<ProductReservation> productReservationList = new ArrayList<>();
 
     @Builder
-    public User(String name, String email, String phoneNumber, String password,String carLocation) {
+    public User(String name, String email, String phoneNumber, String password,String location) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.carLocation = carLocation;
+        this.location = location;
     }
 }
