@@ -1,6 +1,6 @@
-package capstone.carru.driver.repository;
+package capstone.carru.repository;
 
-import capstone.carru.driver.entity.User;
+import capstone.carru.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

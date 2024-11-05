@@ -2,8 +2,8 @@ package capstone.carru.exception.advice;
 
 import static java.util.stream.Collectors.joining;
 
-import capstone.carru.driver.dto.ApiResponse;
-import capstone.carru.driver.dto.ErrorCode;
+import capstone.carru.dto.ApiResponse;
+import capstone.carru.dto.ErrorCode;
 import capstone.carru.exception.InvalidException;
 import capstone.carru.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
