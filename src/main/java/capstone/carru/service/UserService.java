@@ -49,12 +49,24 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public String loginUser(LoginRequest loginRequest) {
+    @Transactional(readOnly = true)
+    public String loginUser(int userStatus, LoginRequest loginRequest) {
+        if(userStatus != 0 && userStatus != 1 && userStatus != 2) {
+            throw new InvalidException(ErrorCode.INVALID);
+        }
+
         User user = userRepository.findByEmailAndDeletedDateIsNull(loginRequest.getEmail())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_MEMBER));
 
         if(user.getApprovedDate() == null) {
+            throw new InvalidException(ErrorCode.INVALID_MEMBER);
+        }
+
+        if(user.getUserStatus() == UserStatus.OWNER && userStatus != 1) {
+            throw new InvalidException(ErrorCode.INVALID_MEMBER);
+        } else if(user.getUserStatus() == UserStatus.DRIVER && userStatus != 0) {
+            throw new InvalidException(ErrorCode.INVALID_MEMBER);
+        } else if (user.getUserStatus() == UserStatus.MANAGER && userStatus != 2) {
             throw new InvalidException(ErrorCode.INVALID_MEMBER);
         }
 
@@ -65,10 +77,14 @@ public class UserService {
         return jwtTokenProvider.generateToken(user.getEmail(), "USER");
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public GetProfileResponse getProfile(String email) {
         User user = userRepository.findByEmailAndDeletedDateIsNull(email)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_MEMBER));
+
+        if(user.getApprovedDate() == null) {
+            throw new InvalidException(ErrorCode.INVALID_MEMBER);
+        }
 
         return GetProfileResponse.of(user.getEmail(), user.getName());
     }

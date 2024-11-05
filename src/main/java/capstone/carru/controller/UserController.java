@@ -27,8 +27,10 @@ public class UserController {
     }
 
     @PostMapping("/v1/user/login")
-    public ApiResponse<LoginResponse> loginUser(LoginRequest loginRequest) {
-        String token = userService.loginUser(loginRequest);
+    public ApiResponse<LoginResponse> loginUser(@RequestParam("userStatus") int userStatus,
+            @RequestBody LoginRequest loginRequest) {
+        String token = userService.loginUser(userStatus, loginRequest);
+
         return ApiResponse.success(LoginResponse.of(token));
     }
 
