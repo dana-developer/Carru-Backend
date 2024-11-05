@@ -63,11 +63,12 @@ public class User extends BaseTimeEntity{
     private List<ProductRouteReservation> productRouteReservationList = new ArrayList<>();
 
     @Builder
-    public User(String name, String email, String phoneNumber, String password,String location) {
+    public User(String name, String email, String phoneNumber, String password,String location, UserStatus userStatus) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.location = location;
+        this.userStatus = userStatus;
     }
 }
