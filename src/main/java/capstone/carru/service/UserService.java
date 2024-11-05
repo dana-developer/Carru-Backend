@@ -2,6 +2,7 @@ package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.User.CreateUserRequest;
+import capstone.carru.dto.User.GetProfileResponse;
 import capstone.carru.dto.User.LoginRequest;
 import capstone.carru.entity.User;
 import capstone.carru.exception.NotFoundException;
@@ -51,5 +52,13 @@ public class UserService {
         }
 
         return jwtTokenProvider.generateToken(user.getEmail(), "USER");
+    }
+
+    @Transactional
+    public GetProfileResponse getProfile(String email) {
+        User user = userRepository.findByEmailAndDeletedDateIsNull(email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_MEMBER));
+
+        return GetProfileResponse.of(user.getEmail(), user.getName());
     }
 }
