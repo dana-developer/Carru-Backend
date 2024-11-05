@@ -1,7 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.CreateUserRequest;
+import capstone.carru.dto.User.CreateUserRequest;
 import capstone.carru.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -2,7 +2,7 @@ package capstone.carru.service;
 
 import static capstone.carru.dto.ErrorCode.INVALID_DUPLICATED_EMAIL;
 
-import capstone.carru.dto.CreateUserRequest;
+import capstone.carru.dto.User.CreateUserRequest;
 import capstone.carru.entity.User;
 import capstone.carru.repository.UserRepository;
 import capstone.carru.exception.InvalidException;
