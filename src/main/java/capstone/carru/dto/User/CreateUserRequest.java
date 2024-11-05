@@ -27,7 +27,7 @@ public class CreateUserRequest {
     @Size(max = 20, message = "최대 20자까지 입력할 수 있습니다.")
     private String phoneNumber;
 
-    @NotBlank(message = "차고지 주소를 입력해주세요.")
+    @NotBlank(message = "차고지 주소 또는 물류 창고 주소를 입력해주세요.")
     @Size(max = 2083, message = "최대 2083자까지 입력할 수 있습니다.")
-    private String carLocation;
+    private String location;
 }

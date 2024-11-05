@@ -5,6 +5,7 @@ import capstone.carru.dto.User.CreateUserRequest;
 import capstone.carru.dto.User.GetProfileResponse;
 import capstone.carru.dto.User.LoginRequest;
 import capstone.carru.entity.User;
+import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.NotFoundException;
 import capstone.carru.repository.UserRepository;
 import capstone.carru.exception.InvalidException;
@@ -20,19 +21,29 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public void createUser(CreateUserRequest createUserRequest) {
+    public void createUser(int userStatus, CreateUserRequest createUserRequest) {
         //1. 이미 가입한 회원인지 확인
         if (userRepository.findByEmailAndDeletedDateIsNull(createUserRequest.getEmail()).isPresent()) {
             throw new InvalidException(ErrorCode.INVALID_DUPLICATED_EMAIL);
         }
 
         //2. 가입한 회원이 아니라면 회원가입 진행
+        UserStatus status = null;
+        if(userStatus == 0) { // 0: 화물 기사
+            status = UserStatus.DRIVER;
+        } else if(userStatus == 1) { // 1: 화물 주인
+            status = UserStatus.OWNER;
+        } else { // 잘못된 요청
+            throw new InvalidException(ErrorCode.INVALID);
+        }
+
         User user = User.builder()
                 .email(createUserRequest.getEmail())
                 .password(createUserRequest.getPassword())
                 .name(createUserRequest.getName())
                 .phoneNumber(createUserRequest.getPhoneNumber())
-                .location(createUserRequest.getCarLocation())
+                .location(createUserRequest.getLocation())
+                .userStatus(status)
                 .build();
 
         userRepository.save(user);
