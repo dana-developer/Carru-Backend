@@ -60,6 +60,9 @@ public class User extends BaseTimeEntity{
     @OneToMany(mappedBy = "user")
     private List<ProductReservation> productReservationList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<ProductRouteReservation> productRouteReservationList = new ArrayList<>();
+
     @Builder
     public User(String name, String email, String phoneNumber, String password,String location) {
         this.name = name;
