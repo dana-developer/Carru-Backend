@@ -32,8 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/v1/owner/sign-up", "/v1/driver/sign-up",
-                                        "/v1/driver/login", "/v1/owner/login", "/v1/user/sign-up",
-                                        "/v1/user/login",
+                                         "/v1/user/sign-up", "/v1/user/login/**",
                                         "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 // 이 밖에 모든 요청에 대해서 인증을 필요로 한다는 설정
                                 .anyRequest().authenticated()
