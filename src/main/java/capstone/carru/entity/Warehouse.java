@@ -9,11 +9,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "warehouses")
 @NoArgsConstructor
+@Getter
 public class Warehouse extends BaseTimeEntity{
 
     @Id
