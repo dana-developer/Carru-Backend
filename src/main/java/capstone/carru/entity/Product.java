@@ -12,11 +12,13 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "products")
 @NoArgsConstructor
+@Getter
 public class Product extends BaseTimeEntity{
 
     @Id
@@ -53,4 +55,7 @@ public class Product extends BaseTimeEntity{
     private LocalDateTime deadline; //마감시간
 
     private LocalDateTime approvedDate; //승인 날짜
+
+    @Column(nullable = false)
+    private Long operationDistance; //운행 거리 (km) (물류 등록시 계산)
 }
