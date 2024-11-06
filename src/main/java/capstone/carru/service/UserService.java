@@ -20,6 +20,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional(readOnly = true)
+    public User validateUser(String email){
+        User user = userRepository.findByEmailAndDeletedDateIsNull(email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_MEMBER));
+
+        if(user.getApprovedDate() == null) {
+            throw new InvalidException(ErrorCode.INVALID_MEMBER);
+        }
+
+        return user;
+    }
+
     @Transactional
     public void createUser(int userStatus, CreateUserRequest createUserRequest) {
         //1. 이미 가입한 회원인지 확인
@@ -55,12 +67,7 @@ public class UserService {
             throw new InvalidException(ErrorCode.INVALID);
         }
 
-        User user = userRepository.findByEmailAndDeletedDateIsNull(loginRequest.getEmail())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_MEMBER));
-
-        if(user.getApprovedDate() == null) {
-            throw new InvalidException(ErrorCode.INVALID_MEMBER);
-        }
+        User user = validateUser(loginRequest.getEmail());
 
         if(user.getUserStatus() == UserStatus.OWNER && userStatus != 1) {
             throw new InvalidException(ErrorCode.INVALID_MEMBER);
@@ -79,13 +86,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public GetProfileResponse getProfile(String email) {
-        User user = userRepository.findByEmailAndDeletedDateIsNull(email)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_MEMBER));
-
-        if(user.getApprovedDate() == null) {
-            throw new InvalidException(ErrorCode.INVALID_MEMBER);
-        }
-
+        User user = validateUser(email);
         return GetProfileResponse.of(user.getEmail(), user.getName());
     }
 }
