@@ -18,7 +18,7 @@ public enum ErrorCode {
      */
     NOT_EXISTS("NF000", "존재하지 않습니다."),
     NOT_EXISTS_MEMBER("NF001", "존재하지 않는 회원입니다."),
-
+    NOT_EXISTS_PRODUCT("NF002", "존재하지 않는 물류입니다."),
     /**
      * 500 Internal Server Exception (서버 내부 에러)
      */
