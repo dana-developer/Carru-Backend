@@ -58,4 +58,8 @@ public class Product extends BaseTimeEntity{
 
     @Column(nullable = false)
     private Long operationDistance; //운행 거리 (km) (물류 등록시 계산)
+
+    public void updateProductStatus(ProductStatus productStatus) {
+        this.productStatus = productStatus;
+    }
 }

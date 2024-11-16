@@ -30,9 +30,6 @@ public class Warehouse extends BaseTimeEntity{
     @Column(length = 100, nullable = false)
     private String name; //창고명
 
-    @Column(length = 100, nullable = false)
-    private String itemType; //창고 종류
-
     @Column(length = 2083, nullable = false)
     private String location; //창고 위치
 
