@@ -45,7 +45,7 @@ public class DriverService {
         Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(logisticsMatchingId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        if(!product.getProductStatus().equals(ProductStatus.TODO)) {
+        if(!product.getProductStatus().equals(ProductStatus.APPROVED)) {
             throw new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT);
         }
 
@@ -59,16 +59,16 @@ public class DriverService {
         Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(logisticsMatchingId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        if(!product.getProductStatus().equals(ProductStatus.TODO)) {
+        if(!product.getProductStatus().equals(ProductStatus.APPROVED)) {
             throw new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT);
         }
 
-        product.updateProductStatus(ProductStatus.RESERVED);
+        product.updateProductStatus(ProductStatus.DRIVER_TODO);
 
         ProductReservation productReservation = ProductReservation.builder()
                 .user(user)
                 .product(product)
-                .productStatus(ProductStatus.RESERVED)
+                .productStatus(ProductStatus.DRIVER_TODO)
                 .build();
 
         productReservationRepository.save(productReservation);
