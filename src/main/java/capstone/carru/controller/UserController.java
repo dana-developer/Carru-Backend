@@ -6,6 +6,7 @@ import capstone.carru.dto.User.GetProfileResponse;
 import capstone.carru.dto.User.LoginRequest;
 import capstone.carru.dto.User.LoginResponse;
 import capstone.carru.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
+    @Operation(summary = "회원가입", description = "회원가입을 할 수 있습니다.")
     @PostMapping("/v1/user/sign-up")
     public ApiResponse<String> createUser(@RequestParam("userStatus") int userStatus,
             @RequestBody CreateUserRequest createUserRequest) {
@@ -26,6 +29,7 @@ public class UserController {
         return ApiResponse.success();
     }
 
+    @Operation(summary = "로그인", description = "로그인을 할 수 있습니다.")
     @PostMapping("/v1/user/login")
     public ApiResponse<LoginResponse> loginUser(@RequestParam("userStatus") int userStatus,
             @RequestBody LoginRequest loginRequest) {
@@ -34,6 +38,7 @@ public class UserController {
         return ApiResponse.success(LoginResponse.of(token));
     }
 
+    @Operation(summary = "프로필 조회", description = "프로필을 조회할 수 있습니다.")
     @GetMapping("/v1/user/profile")
     public ApiResponse<GetProfileResponse> loginUser(Authentication authentication) {
         String email = authentication.getName();
