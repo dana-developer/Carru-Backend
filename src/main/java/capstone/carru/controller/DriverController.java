@@ -11,6 +11,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,5 +34,13 @@ public class DriverController {
             @PathVariable Long logisticsMatchingId) {
         String email = authentication.getName();
         return ApiResponse.success(driverService.getLogisticsMatching(email, logisticsMatchingId));
+    }
+
+    @PostMapping("/v1/driver/logisticsMatching/{logisticsMatchingId}")
+    public ApiResponse<GetLogisticsMatchingDetailResponse> reserveLogisticsMatching(Authentication authentication,
+            @PathVariable Long logisticsMatchingId) {
+        String email = authentication.getName();
+        driverService.reserveLogisticsMatching(email, logisticsMatchingId);
+        return ApiResponse.success();
     }
 }

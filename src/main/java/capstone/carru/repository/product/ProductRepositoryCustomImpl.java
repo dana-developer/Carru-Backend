@@ -26,7 +26,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                                 .and(product.productStatus.eq(ProductStatus.valueOf("TODO")))
                                 .and(product.weight.goe(minWeight))
                                 .and(product.weight.loe(maxWeight))
-                                .and(product.warehouse.name.startsWithIgnoreCase(warehouseKeyword))
+                                .and(product.warehouse.location.startsWith(warehouseKeyword))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
