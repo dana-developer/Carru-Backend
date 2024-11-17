@@ -2,13 +2,20 @@ package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
+import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.ProductReservation;
+import capstone.carru.entity.ProductRouteReservation;
+import capstone.carru.entity.StopOver;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.exception.NotFoundException;
 import capstone.carru.repository.product.ProductRepository;
 import capstone.carru.repository.productReservation.ProductReservationRepository;
+import capstone.carru.repository.productRouteReservation.ProductRouteReservationRepository;
+import capstone.carru.repository.stopOver.StopOverRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -24,6 +31,8 @@ public class DriverService {
     private final UserService userService;
     private final ProductRepository productRepository;
     private final ProductReservationRepository productReservationRepository;
+    private final ProductRouteReservationRepository productRouteReservationRepository;
+    private final StopOverRepository stopOverRepository;
 
     @Transactional(readOnly = true)
     public Slice<GetLogisticsMatchingListResponse> getLogisticsMatchingListRequest(String email, Pageable pageable,
@@ -72,5 +81,59 @@ public class DriverService {
                 .build();
 
         productReservationRepository.save(productReservation);
+    }
+
+    @Transactional
+    public void reserveRouteMatching(String email, ReserveRouteMatchingRequest reserveRouteMatchingRequest) {
+        User user = userService.validateUser(email);
+
+        // 1. 해당 경유지가 존재하는지 확인 + 해당 경유지가 예약되지 않았는지 확인
+        List<Product> productList = new ArrayList<>();
+        reserveRouteMatchingRequest.getStopOverIds().forEach(stopOverId -> {
+
+            Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(stopOverId)
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+            if(!product.getProductStatus().equals(ProductStatus.APPROVED)) {
+                throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+            }
+
+            productList.add(product);
+        });
+
+        if(productList.isEmpty()) {
+            throw new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT);
+        }
+
+        // 2. 경로 예약 정보 저장
+        ProductRouteReservation productRouteReservation = ProductRouteReservation.builder()
+                .user(user)
+                .maxWeight(reserveRouteMatchingRequest.getMaxWeight())
+                .minWeight(reserveRouteMatchingRequest.getMinWeight())
+                .departure(reserveRouteMatchingRequest.getDepartureLocation())
+                .departureLat(reserveRouteMatchingRequest.getDepartureLatitude())
+                .departureLng(reserveRouteMatchingRequest.getDepartureLongitude())
+                .destination(reserveRouteMatchingRequest.getDestinationLocation())
+                .destinationLat(reserveRouteMatchingRequest.getDestinationLatitude())
+                .destinationLng(reserveRouteMatchingRequest.getDestinationLongitude())
+                .estimatedDepartureTime(reserveRouteMatchingRequest.getEstimatedDepartureTime())
+                .likeMoneyRate(reserveRouteMatchingRequest.getLikePrice())
+                .likeShortDistanceRate(reserveRouteMatchingRequest.getLikeShortOperationDistance())
+                .productStatus(ProductStatus.DRIVER_TODO)
+                .build();
+
+        productRouteReservationRepository.save(productRouteReservation);
+
+        // 3. 경유지 예약 정보 저장
+        productList.forEach(product -> {
+            product.updateProductStatus(ProductStatus.DRIVER_TODO);
+
+            StopOver stopOver = StopOver.builder()
+                    .productRouteReservation(productRouteReservation)
+                    .product(product)
+                    .build();
+
+            stopOverRepository.save(stopOver);
+        });
     }
 }

@@ -4,6 +4,7 @@ import capstone.carru.dto.ApiResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingListRequest;
 import capstone.carru.dto.driver.GetLogisticsMatchingListResponse;
+import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.service.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +42,19 @@ public class DriverController {
 
     @Operation(summary = "물류 매칭 예약", description = "물류 매칭을 예약할 수 있습니다.")
     @PostMapping("/v1/driver/logisticsMatching/{logisticsMatchingId}")
-    public ApiResponse<GetLogisticsMatchingDetailResponse> reserveLogisticsMatching(Authentication authentication,
+    public ApiResponse<String> reserveLogisticsMatching(Authentication authentication,
             @PathVariable Long logisticsMatchingId) {
         String email = authentication.getName();
         driverService.reserveLogisticsMatching(email, logisticsMatchingId);
+        return ApiResponse.success();
+    }
+
+    @Operation(summary = "경로 탐색 예약", description = "경로 탐색을 예약할 수 있습니다.")
+    @PostMapping("/v1/driver/routeMatching")
+    public ApiResponse<String> reserveRouteMatching(Authentication authentication,
+            @RequestBody ReserveRouteMatchingRequest reserveRouteMatchingRequest) {
+        String email = authentication.getName();
+        driverService.reserveRouteMatching(email, reserveRouteMatchingRequest);
         return ApiResponse.success();
     }
 }
