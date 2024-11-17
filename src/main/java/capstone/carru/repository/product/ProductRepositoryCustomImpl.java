@@ -23,7 +23,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         List<Product> contents = queryFactory.selectFrom(product)
                 .where(
                         (product.deletedDate.isNull())
-                                .and(product.productStatus.eq(ProductStatus.valueOf("TODO")))
+                                .and(product.productStatus.eq(ProductStatus.valueOf("APPROVED")))
                                 .and(product.weight.goe(minWeight))
                                 .and(product.weight.loe(maxWeight))
                                 .and(product.warehouse.location.startsWith(warehouseKeyword))

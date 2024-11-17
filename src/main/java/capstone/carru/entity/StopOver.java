@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -27,4 +28,10 @@ public class StopOver {
     @ManyToOne
     @JoinColumn(name = "product_route_reservation_id")
     private ProductRouteReservation productRouteReservation; //운송할 경로
+
+    @Builder
+    public StopOver(Product product, ProductRouteReservation productRouteReservation) {
+        this.product = product;
+        this.productRouteReservation = productRouteReservation;
+    }
 }
