@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -64,4 +65,26 @@ public class ProductRouteReservation {
 
     @Column(nullable = false)
     private LocalDateTime estimatedDepartureTime; //출발 예정 시간
+
+    @Builder
+    public ProductRouteReservation(User user, Long likeMoneyRate,
+            Long likeShortDistanceRate, Long maxWeight, Long minWeight,
+            ProductStatus productStatus, String destination,
+            BigDecimal destinationLat, BigDecimal destinationLng,
+            String departure, BigDecimal departureLat,
+            BigDecimal departureLng, LocalDateTime estimatedDepartureTime) {
+        this.user = user;
+        this.likeMoneyRate = likeMoneyRate;
+        this.likeShortDistanceRate = likeShortDistanceRate;
+        this.maxWeight = maxWeight;
+        this.minWeight = minWeight;
+        this.productStatus = productStatus;
+        this.destination = destination;
+        this.destinationLat = destinationLat;
+        this.destinationLng = destinationLng;
+        this.departure = departure;
+        this.departureLat = departureLat;
+        this.departureLng = departureLng;
+        this.estimatedDepartureTime = estimatedDepartureTime;
+    }
 }
