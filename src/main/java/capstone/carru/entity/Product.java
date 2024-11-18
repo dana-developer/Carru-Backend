@@ -12,6 +12,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -58,6 +60,22 @@ public class Product extends BaseTimeEntity{
 
     @Column(nullable = false)
     private Long operationDistance; //운행 거리 (km) (물류 등록시 계산)
+
+    @Builder
+    public Product(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
+                   ProductStatus productStatus, Long price, Long weight,
+                   LocalDateTime deadline, LocalDateTime approvedDate, Long operationDistance) {
+        this.name = name;
+        this.destination = destination;
+        this.destinationLat = destinationLat;
+        this.destinationLng = destinationLng;
+        this.productStatus = productStatus;
+        this.price = price;
+        this.weight = weight;
+        this.deadline = deadline;
+        this.approvedDate = approvedDate;
+        this.operationDistance = operationDistance;
+    }
 
     public void updateProductStatus(ProductStatus productStatus) {
         this.productStatus = productStatus;
