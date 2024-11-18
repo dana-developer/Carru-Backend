@@ -1,6 +1,7 @@
 package capstone.carru.dto.driver;
 
 import capstone.carru.entity.Product;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,9 +13,14 @@ public class GetLogisticsMatchingDetailResponse {
     private String productName; //상품명
 
     private String departureLocation; //출발지
+    private BigDecimal departureLatitude;
+    private BigDecimal departureLongitude;
+
     private String departureName; //출발 창고명
 
     private String destinationLocation; //목적지
+    private BigDecimal destinationLatitude;
+    private BigDecimal destinationLongitude;
 
     private Long price; //운송비
 
@@ -28,8 +34,12 @@ public class GetLogisticsMatchingDetailResponse {
                 .productId(product.getId())
                 .productName(product.getName())
                 .departureLocation(product.getWarehouse().getLocation())
+                .departureLatitude(product.getWarehouse().getLocationLat())
+                .departureLongitude(product.getWarehouse().getLocationLng())
                 .departureName(product.getWarehouse().getName())
                 .destinationLocation(product.getDestination())
+                .destinationLatitude(product.getDestinationLat())
+                .destinationLongitude(product.getDestinationLng())
                 .price(product.getPrice())
                 .weight(product.getWeight())
                 .operationDistance(product.getOperationDistance())
