@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetLogisticMatchingReservingListResponse {
+    private Long listId;
     private String departureLocation; //출발지 : 차고지
     private BigDecimal departureLatitude;
     private BigDecimal departureLongitude;
@@ -23,6 +24,7 @@ public class GetLogisticMatchingReservingListResponse {
 
     public static GetLogisticMatchingReservingListResponse of(Product product) {
         return GetLogisticMatchingReservingListResponse.builder()
+                .listId(product.getId())
                 .departureLocation(product.getWarehouse().getLocation())
                 .departureLatitude(product.getWarehouse().getLocationLat())
                 .departureLongitude(product.getWarehouse().getLocationLng())
