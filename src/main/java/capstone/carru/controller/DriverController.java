@@ -88,4 +88,13 @@ public class DriverController {
         driverService.updateRouteMatchingStatus(email, routeMatchingId, status);
         return ApiResponse.success();
     }
+
+    @Operation(summary = "물류 매칭 운송 상태 변경", description = "routeMatchingId는 물류 매칭 예약 목록 조회 응닶 값의 listId(productId)이고, status = 0(todo -> inprogress), 1(inprogress -> todo), 2(inprogress -> finished)")
+    @PatchMapping("/v1/driver/logisticsMatching/{logisticsMatchingId}")
+    public ApiResponse<String> updateLogisticsMatchingStatus(Authentication authentication,
+            @PathVariable Long logisticsMatchingId, @RequestParam("status") int status) {
+        String email = authentication.getName();
+        driverService.updateLogisticsMatchingStatus(email, logisticsMatchingId, status);
+        return ApiResponse.success();
+    }
 }

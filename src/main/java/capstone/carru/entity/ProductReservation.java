@@ -10,11 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "product_reservations")
 @NoArgsConstructor
+@Getter
 public class ProductReservation extends BaseTimeEntity{
 
     @Id
@@ -38,6 +40,10 @@ public class ProductReservation extends BaseTimeEntity{
             ProductStatus productStatus) {
         this.user = user;
         this.product = product;
+        this.productStatus = productStatus;
+    }
+
+    public void updateProductStatus(ProductStatus productStatus) {
         this.productStatus = productStatus;
     }
 }
