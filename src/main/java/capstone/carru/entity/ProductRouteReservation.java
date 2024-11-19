@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "product_route_reservations")
 @NoArgsConstructor
-public class ProductRouteReservation {
+@Getter
+public class ProductRouteReservation extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,13 +68,21 @@ public class ProductRouteReservation {
     @Column(nullable = false)
     private LocalDateTime estimatedDepartureTime; //출발 예정 시간
 
+    private int stopOverCount; //경유지 개수
+    private Long totalWeight; //총 무게
+    private Long totalPrice; //총 가격
+    private Long totalOperationTime; //총 운행 시간
+    private Long totalOperationDistance; //총 운행 거리
+
     @Builder
     public ProductRouteReservation(User user, Long likeMoneyRate,
             Long likeShortDistanceRate, Long maxWeight, Long minWeight,
             ProductStatus productStatus, String destination,
             BigDecimal destinationLat, BigDecimal destinationLng,
             String departure, BigDecimal departureLat,
-            BigDecimal departureLng, LocalDateTime estimatedDepartureTime) {
+            BigDecimal departureLng, LocalDateTime estimatedDepartureTime,
+            int stopOverCount, Long totalWeight, Long totalPrice,
+            Long totalOperationTime, Long totalOperationDistance) {
         this.user = user;
         this.likeMoneyRate = likeMoneyRate;
         this.likeShortDistanceRate = likeShortDistanceRate;
@@ -86,5 +96,10 @@ public class ProductRouteReservation {
         this.departureLat = departureLat;
         this.departureLng = departureLng;
         this.estimatedDepartureTime = estimatedDepartureTime;
+        this.stopOverCount = stopOverCount;
+        this.totalWeight = totalWeight;
+        this.totalPrice = totalPrice;
+        this.totalOperationTime = totalOperationTime;
+        this.totalOperationDistance = totalOperationDistance;
     }
 }
