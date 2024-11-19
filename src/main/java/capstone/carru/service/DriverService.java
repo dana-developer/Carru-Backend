@@ -217,4 +217,33 @@ public class DriverService {
             stopOver.getProduct().updateProductStatus(productStatuses[status][1]);
         });
     }
+
+    @Transactional
+    public void updateLogisticsMatchingStatus(String email, Long logisticsMatchingId, int status) {
+
+        User user = userService.validateUser(email);
+
+        ProductStatus[][] productStatuses = {
+                {ProductStatus.DRIVER_TODO,  ProductStatus.DRIVER_INPROGRESS,},     // status 0 (todo를 -> inprogress로)
+                {ProductStatus.DRIVER_INPROGRESS, ProductStatus.DRIVER_TODO}, // status 1 (inprogress를 -> todo로)
+                {ProductStatus.DRIVER_INPROGRESS, ProductStatus.DRIVER_FINISHED}    // status 2    (inprogress를 finished로)
+        };
+
+        if (status < 0 || status >= productStatuses.length) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+
+        //이때 logisticsMatchingId는 productId
+        ProductReservation productReservation = productReservationRepository
+                .findByProductIdAndDeletedDateIsNullAndUser(logisticsMatchingId, user)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        if(!productReservation.getProductStatus().equals(productStatuses[status][0])) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+        productReservation.updateProductStatus(productStatuses[status][1]);
+        productReservation.getProduct().updateProductStatus(productStatuses[status][1]);
+    }
 }
