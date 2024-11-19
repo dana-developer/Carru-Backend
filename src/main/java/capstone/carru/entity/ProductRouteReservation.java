@@ -102,4 +102,8 @@ public class ProductRouteReservation extends BaseTimeEntity{
         this.totalOperationTime = totalOperationTime;
         this.totalOperationDistance = totalOperationDistance;
     }
+
+    public void updateProductStatus(ProductStatus productStatus) {
+        this.productStatus = productStatus;
+    }
 }

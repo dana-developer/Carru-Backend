@@ -186,4 +186,35 @@ public class DriverService {
 
         return productRouteReservations.map(GetRouteMatchingResevingListResponse::of);
     }
+
+    @Transactional
+    public void updateRouteMatchingStatus(String email, Long routeMatchingId, int status) {
+
+        User user = userService.validateUser(email);
+
+        ProductStatus[][] productStatuses = {
+                {ProductStatus.DRIVER_TODO,  ProductStatus.DRIVER_INPROGRESS,},     // status 0 (todo를 -> inprogress로)
+                {ProductStatus.DRIVER_INPROGRESS, ProductStatus.DRIVER_TODO}, // status 1 (inprogress를 -> todo로)
+                {ProductStatus.DRIVER_INPROGRESS, ProductStatus.DRIVER_FINISHED}    // status 2    (inprogress를 finished로)
+        };
+
+        if (status < 0 || status >= productStatuses.length) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+        ProductRouteReservation productRouteReservation = productRouteReservationRepository
+                .findByIdAndDeletedDateIsNullAndUser(routeMatchingId, user)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        if(!productRouteReservation.getProductStatus().equals(productStatuses[status][0])) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+        productRouteReservation.updateProductStatus(productStatuses[status][1]);
+
+        List<StopOver> stopOvers = stopOverRepository.findByProductRouteReservation(productRouteReservation);
+        stopOvers.forEach(stopOver -> {
+            stopOver.getProduct().updateProductStatus(productStatuses[status][1]);
+        });
+    }
 }
