@@ -121,6 +121,11 @@ public class DriverService {
                 .likeMoneyRate(reserveRouteMatchingRequest.getLikePrice())
                 .likeShortDistanceRate(reserveRouteMatchingRequest.getLikeShortOperationDistance())
                 .productStatus(ProductStatus.DRIVER_TODO)
+                .totalWeight(productList.stream().mapToLong(Product::getWeight).sum())
+                .totalPrice(productList.stream().mapToLong(Product::getPrice).sum())
+                .totalOperationDistance(productList.stream().mapToLong(Product::getOperationDistance).sum())
+                .totalOperationTime(productList.stream().mapToLong(Product::getOperationDistance).sum()/50)
+                .stopOverCount(productList.size())
                 .build();
 
         productRouteReservationRepository.save(productRouteReservation);
