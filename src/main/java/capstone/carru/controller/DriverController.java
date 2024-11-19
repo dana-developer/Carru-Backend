@@ -27,7 +27,7 @@ public class DriverController {
     private final DriverService driverService;
 
     @Operation(summary = "물류 매칭 리스트 조회", description = "물류 매칭 리스트를 조회할 수 있습니다.")
-    @GetMapping("/v1/driver/logisticsMatching")
+    @PostMapping("/v1/driver/logisticsMatchingList")
     public ApiResponse<Slice<GetLogisticsMatchingListResponse>> getLogisticsMatchingList(Authentication authentication,
             Pageable pageable,
             @RequestBody GetLogisticsMatchingListRequest getLogisticsMatchingListRequest) {
