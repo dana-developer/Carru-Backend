@@ -5,6 +5,7 @@ import capstone.carru.dto.driver.GetLogisticMatchingReservingListResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingListRequest;
 import capstone.carru.dto.driver.GetLogisticsMatchingListResponse;
+import capstone.carru.dto.driver.GetRouteMatchingResevingListResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.service.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,11 +62,20 @@ public class DriverController {
     }
 
     @Operation(summary = "물류 매칭 예약 목록", description = "예약 목록을 확인할 수 있습니다.")
-    @GetMapping("/v1/driver/routeMatching/reservingList")
+    @GetMapping("/v1/driver/logisticsMatching/reservingList")
     public ApiResponse<Slice<GetLogisticMatchingReservingListResponse>> getLogisticMatchingReservingList(
             @RequestParam("listType") int listType, Authentication authentication,
             Pageable pageable) {
         String email = authentication.getName();
         return ApiResponse.success(driverService.getLogisticMatchingReservingList(email, pageable, listType));
+    }
+
+    @Operation(summary = "경로 탐색 예약 목록", description = "예약 목록을 확인할 수 있습니다.")
+    @GetMapping("/v1/driver/routeMatching/reservingList")
+    public ApiResponse<Slice<GetRouteMatchingResevingListResponse>> getRouteMatchingReservingList(
+            @RequestParam("listType") int listType, Authentication authentication,
+            Pageable pageable) {
+        String email = authentication.getName();
+        return ApiResponse.success(driverService.getRouteMatchingReservingList(email, pageable, listType));
     }
 }
