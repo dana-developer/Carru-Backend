@@ -8,10 +8,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +32,9 @@ public class Product extends BaseTimeEntity{
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse; //창고주
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductReservation> productReservationList = new ArrayList<>();
 
     @Column(length = 100, nullable = false)
     private String name; //상품명

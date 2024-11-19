@@ -1,6 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
+import capstone.carru.dto.driver.GetLogisticMatchingReservingListResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingListRequest;
 import capstone.carru.dto.driver.GetLogisticsMatchingListResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -56,5 +58,14 @@ public class DriverController {
         String email = authentication.getName();
         driverService.reserveRouteMatching(email, reserveRouteMatchingRequest);
         return ApiResponse.success();
+    }
+
+    @Operation(summary = "물류 매칭 예약 목록", description = "예약 목록을 확인할 수 있습니다.")
+    @GetMapping("/v1/driver/routeMatching/reservingList")
+    public ApiResponse<Slice<GetLogisticMatchingReservingListResponse>> getLogisticMatchingReservingList(
+            @RequestParam("listType") int listType, Authentication authentication,
+            Pageable pageable) {
+        String email = authentication.getName();
+        return ApiResponse.success(driverService.getLogisticMatchingReservingList(email, pageable, listType));
     }
 }

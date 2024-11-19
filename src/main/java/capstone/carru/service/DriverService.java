@@ -1,6 +1,7 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.driver.GetLogisticMatchingReservingListResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.entity.Product;
@@ -135,5 +136,26 @@ public class DriverService {
 
             stopOverRepository.save(stopOver);
         });
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetLogisticMatchingReservingListResponse> getLogisticMatchingReservingList(String email, Pageable pageable, int listType) {
+        userService.validateUser(email);
+
+        ProductStatus[] productStatuses = {
+                ProductStatus.DRIVER_TODO,       // listType 0
+                ProductStatus.DRIVER_INPROGRESS, // listType 1
+                ProductStatus.DRIVER_FINISHED    // listType 2
+        };
+
+        if (listType < 0 || listType >= productStatuses.length) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+        String productStatus = productStatuses[listType].name();
+
+        Slice<Product> products = productReservationRepository.getReservingList(pageable, email, productStatus);
+
+        return products.map(GetLogisticMatchingReservingListResponse::of);
     }
 }
