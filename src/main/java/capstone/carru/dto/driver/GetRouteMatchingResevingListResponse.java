@@ -1,6 +1,5 @@
 package capstone.carru.dto.driver;
 
-import capstone.carru.entity.Product;
 import capstone.carru.entity.ProductRouteReservation;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,6 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetRouteMatchingResevingListResponse {
+    private Long listId;
     private LocalDateTime startTime; //운행 시작 시간
     private String departureLocation; //출발지 : 차고지
     private BigDecimal departureLatitude;
@@ -26,6 +26,7 @@ public class GetRouteMatchingResevingListResponse {
 
     public static GetRouteMatchingResevingListResponse of(ProductRouteReservation productRouteReservation) {
         return GetRouteMatchingResevingListResponse.builder()
+                .listId(productRouteReservation.getId())
                 .startTime(productRouteReservation.getEstimatedDepartureTime())
                 .departureLocation(productRouteReservation.getDeparture())
                 .departureLatitude(productRouteReservation.getDepartureLat())
