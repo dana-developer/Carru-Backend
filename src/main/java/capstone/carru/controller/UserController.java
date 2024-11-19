@@ -21,7 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "회원가입", description = "회원가입을 할 수 있습니다.")
+    @Operation(summary = "회원가입", description = "회원가입을 할 수 있습니다. userStatus = 0(화물기사), 1(화주), 2(관리자)")
     @PostMapping("/v1/user/sign-up")
     public ApiResponse<String> createUser(@RequestParam("userStatus") int userStatus,
             @RequestBody CreateUserRequest createUserRequest) {
@@ -29,7 +29,7 @@ public class UserController {
         return ApiResponse.success();
     }
 
-    @Operation(summary = "로그인", description = "로그인을 할 수 있습니다.")
+    @Operation(summary = "로그인", description = "로그인을 할 수 있습니다. userStatus = 0(화물기사), 1(화주), 2(관리자)")
     @PostMapping("/v1/user/login")
     public ApiResponse<LoginResponse> loginUser(@RequestParam("userStatus") int userStatus,
             @RequestBody LoginRequest loginRequest) {
