@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +26,7 @@ public class DriverController {
     private final DriverService driverService;
 
     @Operation(summary = "물류 매칭 리스트 조회", description = "물류 매칭 리스트를 조회할 수 있습니다.")
-    @GetMapping("/v1/driver/logisticsMatching")
+    @PostMapping("/v1/driver/logisticsMatching")
     public ApiResponse<Slice<GetLogisticsMatchingListResponse>> getLogisticsMatchingList(Authentication authentication,
             Pageable pageable,
             @RequestBody GetLogisticsMatchingListRequest getLogisticsMatchingListRequest) {
@@ -36,7 +35,7 @@ public class DriverController {
     }
 
     @Operation(summary = "물류 매칭 상세 조회", description = "물류 매칭 상세를 조회할 수 있습니다.")
-    @GetMapping("/v1/driver/logisticsMatching/{logisticsMatchingId}")
+    @PostMapping("/v1/driver/logisticsMatching/{logisticsMatchingId}")
     public ApiResponse<GetLogisticsMatchingDetailResponse> getLogisticsMatching(Authentication authentication,
             @PathVariable Long logisticsMatchingId) {
         String email = authentication.getName();
@@ -61,8 +60,8 @@ public class DriverController {
         return ApiResponse.success();
     }
 
-    @Operation(summary = "물류 매칭 예약 목록", description = "예약 목록을 확인할 수 있습니다.")
-    @GetMapping("/v1/driver/logisticsMatching/reservingList")
+    @Operation(summary = "물류 매칭 예약 목록", description = "예약 목록을 확인할 수 있습니다. listType = 0(Todo), 1(In-Progress), 2(Finished)")
+    @PostMapping("/v1/driver/logisticsMatching/reservingList")
     public ApiResponse<Slice<GetLogisticMatchingReservingListResponse>> getLogisticMatchingReservingList(
             @RequestParam("listType") int listType, Authentication authentication,
             Pageable pageable) {
@@ -70,8 +69,8 @@ public class DriverController {
         return ApiResponse.success(driverService.getLogisticMatchingReservingList(email, pageable, listType));
     }
 
-    @Operation(summary = "경로 탐색 예약 목록", description = "예약 목록을 확인할 수 있습니다.")
-    @GetMapping("/v1/driver/routeMatching/reservingList")
+    @Operation(summary = "경로 탐색 예약 목록", description = "예약 목록을 확인할 수 있습니다. listType = 0(Todo), 1(In-Progress), 2(Finished")
+    @PostMapping("/v1/driver/routeMatching/reservingList")
     public ApiResponse<Slice<GetRouteMatchingResevingListResponse>> getRouteMatchingReservingList(
             @RequestParam("listType") int listType, Authentication authentication,
             Pageable pageable) {
