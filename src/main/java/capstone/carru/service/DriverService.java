@@ -1,7 +1,9 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.driver.GetLogisticMatchingReservingListResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
+import capstone.carru.dto.driver.GetRouteMatchingResevingListResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.ProductReservation;
@@ -120,6 +122,11 @@ public class DriverService {
                 .likeMoneyRate(reserveRouteMatchingRequest.getLikePrice())
                 .likeShortDistanceRate(reserveRouteMatchingRequest.getLikeShortOperationDistance())
                 .productStatus(ProductStatus.DRIVER_TODO)
+                .totalWeight(productList.stream().mapToLong(Product::getWeight).sum())
+                .totalPrice(productList.stream().mapToLong(Product::getPrice).sum())
+                .totalOperationDistance(productList.stream().mapToLong(Product::getOperationDistance).sum())
+                .totalOperationTime(productList.stream().mapToLong(Product::getOperationDistance).sum()/50)
+                .stopOverCount(productList.size())
                 .build();
 
         productRouteReservationRepository.save(productRouteReservation);
@@ -135,5 +142,48 @@ public class DriverService {
 
             stopOverRepository.save(stopOver);
         });
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetLogisticMatchingReservingListResponse> getLogisticMatchingReservingList(String email, Pageable pageable, int listType) {
+        userService.validateUser(email);
+
+        ProductStatus[] productStatuses = {
+                ProductStatus.DRIVER_TODO,       // listType 0
+                ProductStatus.DRIVER_INPROGRESS, // listType 1
+                ProductStatus.DRIVER_FINISHED    // listType 2
+        };
+
+        if (listType < 0 || listType >= productStatuses.length) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+        String productStatus = productStatuses[listType].name();
+
+        Slice<Product> products = productReservationRepository.getReservingList(pageable, email, productStatus);
+
+        return products.map(GetLogisticMatchingReservingListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetRouteMatchingResevingListResponse> getRouteMatchingReservingList(String email, Pageable pageable, int listType) {
+        userService.validateUser(email);
+
+        ProductStatus[] productStatuses = {
+                ProductStatus.DRIVER_TODO,       // listType 0
+                ProductStatus.DRIVER_INPROGRESS, // listType 1
+                ProductStatus.DRIVER_FINISHED    // listType 2
+        };
+
+        if (listType < 0 || listType >= productStatuses.length) {
+            throw new NotFoundException(ErrorCode.INVALID_PRODUCT_STATUS);
+        }
+
+        String productStatus = productStatuses[listType].name();
+
+        Slice<ProductRouteReservation> productRouteReservations
+                = productRouteReservationRepository.getReservingList(pageable, email, productStatus);
+
+        return productRouteReservations.map(GetRouteMatchingResevingListResponse::of);
     }
 }
