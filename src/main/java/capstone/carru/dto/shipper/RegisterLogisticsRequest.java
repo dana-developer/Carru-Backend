@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class RegisterLogisticsRequest {
-
+    private Long userId; // 화주 ID 추가
     private String name;           // 물류 이름
     private double weight;         // 물류 무게
     private double cost;           // 비용
