@@ -2,49 +2,39 @@ package capstone.carru.dto.driver;
 
 import capstone.carru.entity.Product;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class GetLogisticsMatchingDetailResponse {
-    private Long productId; //상품 id
-    private String productName; //상품명
-
-    private String departureLocation; //출발지
+public class GetLogisticMatchingReservingListResponse {
+    private Long listId;
+    private String departureLocation; //출발지 : 차고지
     private BigDecimal departureLatitude;
     private BigDecimal departureLongitude;
 
-    private String departureName; //출발 창고명
-
-    private String destinationLocation; //목적지
+    private String destinationLocation; //도착지 : 물류의 목적지
     private BigDecimal destinationLatitude;
     private BigDecimal destinationLongitude;
 
-    private Long price; //운송비
+    private Long weight;
+    private Long price;
+    private Long operationDistance;
+    private Long operationTime;
 
-    private Long weight; //무게
-    private Long operationDistance; //운행 거리
-    private Long operationTime; //운행 시간
-    private LocalDateTime deadLine; //마감 시간(운송 기한)
-
-    public static GetLogisticsMatchingDetailResponse of(Product product) {
-        return GetLogisticsMatchingDetailResponse.builder()
-                .productId(product.getId())
-                .productName(product.getName())
+    public static GetLogisticMatchingReservingListResponse of(Product product) {
+        return GetLogisticMatchingReservingListResponse.builder()
+                .listId(product.getId())
                 .departureLocation(product.getWarehouse().getLocation())
                 .departureLatitude(product.getWarehouse().getLocationLat())
                 .departureLongitude(product.getWarehouse().getLocationLng())
-                .departureName(product.getWarehouse().getName())
                 .destinationLocation(product.getDestination())
                 .destinationLatitude(product.getDestinationLat())
                 .destinationLongitude(product.getDestinationLng())
-                .price(product.getPrice())
                 .weight(product.getWeight())
+                .price(product.getPrice())
                 .operationDistance(product.getOperationDistance())
                 .operationTime(product.getOperationDistance()/50)
-                .deadLine(product.getDeadline())
                 .build();
     }
 }
