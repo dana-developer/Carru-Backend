@@ -8,7 +8,7 @@ import capstone.carru.dto.User.UpdateNameRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.NotFoundException;
-import capstone.carru.repository.UserRepository;
+import capstone.carru.repository.user.UserRepository;
 import capstone.carru.exception.InvalidException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
