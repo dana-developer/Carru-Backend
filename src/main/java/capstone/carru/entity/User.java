@@ -71,4 +71,8 @@ public class User extends BaseTimeEntity{
         this.location = location;
         this.userStatus = userStatus;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

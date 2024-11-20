@@ -4,6 +4,7 @@ import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.User.CreateUserRequest;
 import capstone.carru.dto.User.GetProfileResponse;
 import capstone.carru.dto.User.LoginRequest;
+import capstone.carru.dto.User.UpdateNameRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.NotFoundException;
@@ -88,5 +89,11 @@ public class UserService {
     public GetProfileResponse getProfile(String email) {
         User user = validateUser(email);
         return GetProfileResponse.of(user.getEmail(), user.getName());
+    }
+
+    @Transactional
+    public void updateName(String email, UpdateNameRequest updateNameRequest) {
+        User user = validateUser(email);
+        user.updateName(updateNameRequest.getName());
     }
 }
