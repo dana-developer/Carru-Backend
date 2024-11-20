@@ -8,15 +8,15 @@ import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor
-public class SearchWarehouseRequest {
+public class SearchWarehouseResponse {
     private Long id;
     private String name;
     private String location;
     private BigDecimal locationLat;
     private BigDecimal locationLng;
 
-    public static SearchWarehouseRequest fromEntity(Warehouse warehouse) {
-        return new SearchWarehouseRequest(
+    public static SearchWarehouseResponse fromEntity(Warehouse warehouse) {
+        return new SearchWarehouseResponse(
                 warehouse.getId(),
                 warehouse.getName(),
                 warehouse.getLocation(),

@@ -70,7 +70,8 @@ public class Product extends BaseTimeEntity{
     @Builder
     public Product(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
                    ProductStatus productStatus, Long price, Long weight,
-                   LocalDateTime deadline, LocalDateTime approvedDate, Long operationDistance) {
+                   LocalDateTime deadline, LocalDateTime approvedDate, Long operationDistance,
+                   Warehouse warehouse) {
         this.name = name;
         this.destination = destination;
         this.destinationLat = destinationLat;
@@ -81,6 +82,7 @@ public class Product extends BaseTimeEntity{
         this.deadline = deadline;
         this.approvedDate = approvedDate;
         this.operationDistance = operationDistance;
+        this.warehouse = warehouse;
     }
 
     public void updateProductStatus(ProductStatus productStatus) {

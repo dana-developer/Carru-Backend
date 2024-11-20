@@ -2,7 +2,7 @@ package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
-import capstone.carru.dto.shipper.SearchWarehouseRequest;
+import capstone.carru.dto.shipper.SearchWarehouseResponse;
 import capstone.carru.entity.Warehouse;
 import capstone.carru.repository.WarehouseRepository;
 import capstone.carru.service.ShipperService;
@@ -30,10 +30,10 @@ public class ShipperController {
 
     @Operation(summary = "창고 검색", description = "키워드를 기반으로 창고를 검색합니다.")
     @GetMapping("/v1/shipper/search")
-    public ApiResponse<List<SearchWarehouseRequest>> searchWarehouse(@RequestParam String keyword) {
+    public ApiResponse<List<SearchWarehouseResponse>> searchWarehouse(@RequestParam String keyword) {
         List<Warehouse> warehouses = warehouseRepository.findByNameContainingOrLocationContaining(keyword, keyword);
-        List<SearchWarehouseRequest> searchWarehouseRequests = warehouses.stream()
-                .map(SearchWarehouseRequest::fromEntity)
+        List<SearchWarehouseResponse> searchWarehouseRequests = warehouses.stream()
+                .map(SearchWarehouseResponse::fromEntity)
                 .toList();
         return ApiResponse.success(searchWarehouseRequests);
     }

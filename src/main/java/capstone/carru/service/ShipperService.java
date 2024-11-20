@@ -35,20 +35,11 @@ public class ShipperService {
 
     @Transactional
     public void registerLogistics(String email, RegisterLogisticsRequest registerLogisticsRequest) {
-        // 창고 키워드로 조회
-        List<Warehouse> warehouses = warehouseRepository.findByNameContainingOrLocationContaining(
-                registerLogisticsRequest.getDestination(),
-                registerLogisticsRequest.getDestination()
-        );
+        // 창고 정보를 받아옴
+        Warehouse warehouse = warehouseRepository.findById(registerLogisticsRequest.getWarehouseId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 창고를 찾을 수 없습니다."));
 
-        if (warehouses.isEmpty()) {
-            throw new IllegalArgumentException("해당 키워드와 일치하는 창고가 없습니다.");
-        }
-
-        // 첫 번째 창고를 선택 (필요시 추가 조건으로 특정 창고 선택 가능)
-        Warehouse warehouse = warehouses.get(0);
-
-        // 화주 위치 가져오기
+        // 화주 정보 조회
         User user = userService.validateUser(email);
 
         // 거리 계산
@@ -62,7 +53,7 @@ public class ShipperService {
         // Product 엔티티를 Builder를 사용하여 생성
         Product product = Product.builder()
                 .name(registerLogisticsRequest.getName())
-                .destination(registerLogisticsRequest.getDestination())
+                .destination(warehouse.getLocation())
                 .destinationLat(warehouse.getLocationLat())
                 .destinationLng(warehouse.getLocationLng())
                 .price(Math.round(registerLogisticsRequest.getCost()))
@@ -70,6 +61,7 @@ public class ShipperService {
                 .deadline(registerLogisticsRequest.getDeadline())
                 .operationDistance(Math.round(distance))
                 .productStatus(ProductStatus.WAITING)
+                .warehouse(warehouse)
                 .build();
 
         // 엔티티 저장
