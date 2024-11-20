@@ -5,6 +5,8 @@ import capstone.carru.dto.driver.GetLogisticMatchingReservingListResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingListRequest;
 import capstone.carru.dto.driver.GetLogisticsMatchingListResponse;
+import capstone.carru.dto.driver.GetLogisticsMatchingReservingListDetailResponse;
+import capstone.carru.dto.driver.GetRouteMatchingReservingListDetailResponse;
 import capstone.carru.dto.driver.GetRouteMatchingResevingListResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.service.DriverService;
@@ -96,5 +98,21 @@ public class DriverController {
         String email = authentication.getName();
         driverService.updateLogisticsMatchingStatus(email, logisticsMatchingId, status);
         return ApiResponse.success();
+    }
+
+    @Operation(summary = "경로 탐색 예약 목록 상세 조회", description = "routeMatchingId = 경로 탐색 예약 목록 조회 응닶 값의 listId")
+    @GetMapping("/v1/driver/routeMatching/reservingList/{routeMatchingId}")
+    public ApiResponse<GetRouteMatchingReservingListDetailResponse> getRouteMatchingReservingListDetail(Authentication authentication,
+            @PathVariable Long routeMatchingId) {
+        String email = authentication.getName();
+        return ApiResponse.success(driverService.getRouteMatchingReservingListDetail(email, routeMatchingId));
+    }
+
+    @Operation(summary = "물류 매칭 예약 목록 상세 조회", description = "routeMatchingId = 물류 매칭 예약 목록 조회 응닶 값의 listId(productId)")
+    @GetMapping("/v1/driver/logisticsMatching/reservingList/{routeMatchingId}")
+    public ApiResponse<GetLogisticsMatchingReservingListDetailResponse> getLogisticsMatchingReservingListDetail(Authentication authentication,
+            @PathVariable Long routeMatchingId) {
+        String email = authentication.getName();
+        return ApiResponse.success(driverService.getLogisticsMatchingReservingListDetail(email, routeMatchingId));
     }
 }

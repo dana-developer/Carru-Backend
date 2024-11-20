@@ -3,6 +3,8 @@ package capstone.carru.service;
 import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.driver.GetLogisticMatchingReservingListResponse;
 import capstone.carru.dto.driver.GetLogisticsMatchingDetailResponse;
+import capstone.carru.dto.driver.GetLogisticsMatchingReservingListDetailResponse;
+import capstone.carru.dto.driver.GetRouteMatchingReservingListDetailResponse;
 import capstone.carru.dto.driver.GetRouteMatchingResevingListResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
 import capstone.carru.entity.Product;
@@ -245,5 +247,25 @@ public class DriverService {
 
         productReservation.updateProductStatus(productStatuses[status][1]);
         productReservation.getProduct().updateProductStatus(productStatuses[status][1]);
+    }
+
+    @Transactional(readOnly = true)
+    public GetRouteMatchingReservingListDetailResponse getRouteMatchingReservingListDetail(String email, Long routeMatchingId) {
+        User user = userService.validateUser(email);
+
+        ProductRouteReservation productRouteReservation = productRouteReservationRepository.findByIdAndDeletedDateIsNullAndUser(routeMatchingId, user)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return GetRouteMatchingReservingListDetailResponse.of(productRouteReservation);
+    }
+
+    @Transactional(readOnly = true)
+    public GetLogisticsMatchingReservingListDetailResponse getLogisticsMatchingReservingListDetail(String email, Long routeMatchingId) {
+        User user = userService.validateUser(email);
+
+        ProductReservation productReservation = productReservationRepository.findByProductIdAndDeletedDateIsNullAndUser(routeMatchingId, user)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return GetLogisticsMatchingReservingListDetailResponse.of(productReservation.getProduct());
     }
 }
