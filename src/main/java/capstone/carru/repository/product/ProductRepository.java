@@ -10,4 +10,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     Optional<Product> findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(Long id);
 
     Slice<Product> getApprovingList(Pageable pageable);
+
+    Optional<Product> findByIdAndDeletedDateIsNullAndApprovedDateIsNull(Long id);
 }

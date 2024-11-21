@@ -5,6 +5,7 @@ import capstone.carru.dto.User.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.User.GetApprovingUserListResponse;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.User;
+import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.InvalidException;
 import capstone.carru.repository.product.ProductRepository;
@@ -56,5 +57,16 @@ public class ManagerService {
         Slice<Product> products = productRepository.getApprovingList(pageable);
 
         return products.map(GetApprovingLogisticsListResponse::of);
+    }
+
+    @Transactional
+    public void approveLogistics(String email, Long productId) {
+        userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNull(productId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID));
+
+        product.updateApprovedDate();
+        product.updateProductStatus(ProductStatus.APPROVED);
     }
 }

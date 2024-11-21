@@ -46,4 +46,13 @@ public class ManagerController {
         String email = authentication.getName();
         return ApiResponse.success(managerService.getApprovingLogisticsList(email, pageable));
     }
+
+    @Operation(summary = "물류 승인", description = "물류를 승인할 수 있습니다.")
+    @PatchMapping("/v1/manager/approvingList/logistics/{productId}")
+    public ApiResponse<String> approveLogistics(
+            Authentication authentication, @PathVariable Long productId) {
+        String email = authentication.getName();
+        managerService.approveLogistics(email, productId);
+        return ApiResponse.success();
+    }
 }
