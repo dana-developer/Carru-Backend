@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
     Optional<Product> findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(Long id);
     List<Product> findAllByWarehouse_UserAndProductStatus(User user, ProductStatus status);
+    Optional<Product> findByIdAndProductStatus(Long id, ProductStatus status);
 }

@@ -1,6 +1,7 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.shipper.PendingLogisticsListResponse;
+import capstone.carru.dto.shipper.PendingLogisticsResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
@@ -85,5 +86,25 @@ public class ShipperService {
                     );
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PendingLogisticsResponse getPendingLogisticsDetail(String email, Long id) {
+        User user = userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndProductStatus(id, ProductStatus.WAITING)
+                .orElseThrow(() -> new IllegalArgumentException("해당 미승인 물류를 찾을 수 없습니다."));
+
+        Warehouse warehouse = product.getWarehouse();
+
+        return new PendingLogisticsResponse(
+                warehouse.getName(),
+                product.getDestination(),
+                product.getWeight(),
+                product.getPrice(),
+                product.getOperationDistance(),
+                product.getOperationDistance()/50,
+                product.getDeadline()
+        );
     }
 }
