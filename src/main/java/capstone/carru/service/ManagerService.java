@@ -1,10 +1,13 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
-import capstone.carru.dto.User.GetApprovingListResponse;
+import capstone.carru.dto.User.GetApprovingLogisticsListResponse;
+import capstone.carru.dto.User.GetApprovingUserListResponse;
+import capstone.carru.entity.Product;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.InvalidException;
+import capstone.carru.repository.product.ProductRepository;
 import capstone.carru.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +21,10 @@ public class ManagerService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
-    public Slice<GetApprovingListResponse> getApprovingList(String email, int listType, Pageable pageable) {
+    public Slice<GetApprovingUserListResponse> getApprovingList(String email, int listType, Pageable pageable) {
         userService.validateUser(email);
 
         Slice<User> users;
@@ -32,7 +36,7 @@ public class ManagerService {
             throw new InvalidException(ErrorCode.INVALID);
         }
 
-        return users.map(GetApprovingListResponse::of);
+        return users.map(GetApprovingUserListResponse::of);
     }
 
     @Transactional
@@ -43,5 +47,14 @@ public class ManagerService {
                 .orElseThrow(() -> new InvalidException(ErrorCode.INVALID));
 
         user.updateApprovedDate();
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetApprovingLogisticsListResponse> getApprovingLogisticsList(String email, Pageable pageable) {
+        userService.validateUser(email);
+
+        Slice<Product> products = productRepository.getApprovingList(pageable);
+
+        return products.map(GetApprovingLogisticsListResponse::of);
     }
 }

@@ -1,6 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
+import capstone.carru.dto.User.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.User.GetApprovingUserListResponse;
 import capstone.carru.service.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,5 +36,14 @@ public class ManagerController {
         String email = authentication.getName();
         managerService.approveUser(email, userId);
         return ApiResponse.success();
+    }
+
+
+    @Operation(summary = "물류 미승인 목록 조회", description = "물류 미승인 목록을 조회할 수 있습니다")
+    @GetMapping("/v1/manager/approvingList/logistics")
+    public ApiResponse<Slice<GetApprovingLogisticsListResponse>> getApprovingLogisticsList(
+            Authentication authentication, Pageable pageable) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovingLogisticsList(email, pageable));
     }
 }
