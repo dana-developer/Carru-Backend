@@ -1,17 +1,17 @@
 package capstone.carru.service;
 
+import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.Warehouse;
 import capstone.carru.entity.status.ProductStatus;
+import capstone.carru.exception.InvalidException;
 import capstone.carru.repository.product.ProductRepository;
 import capstone.carru.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +36,8 @@ public class ShipperService {
     @Transactional
     public void registerLogistics(String email, RegisterLogisticsRequest registerLogisticsRequest) {
         // 창고 정보를 받아옴
-        Warehouse warehouse = warehouseRepository.findById(registerLogisticsRequest.getWarehouseId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 창고를 찾을 수 없습니다."));
+        Warehouse destination = warehouseRepository.findById(registerLogisticsRequest.getWarehouseId())
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_WAREHOUSE));
 
         // 화주 정보 조회
         User user = userService.validateUser(email);
@@ -46,22 +46,25 @@ public class ShipperService {
         double distance = calculateDistance(
                 user.getLocationLat().doubleValue(),
                 user.getLocationLng().doubleValue(),
-                warehouse.getLocationLat().doubleValue(),
-                warehouse.getLocationLng().doubleValue()
+                destination.getLocationLat().doubleValue(),
+                destination.getLocationLng().doubleValue()
         );
+
+        Warehouse userWarehouse = warehouseRepository.findFirstByUserAndDeletedDateIsNull(user)
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
 
         // Product 엔티티를 Builder를 사용하여 생성
         Product product = Product.builder()
                 .name(registerLogisticsRequest.getName())
-                .destination(warehouse.getLocation())
-                .destinationLat(warehouse.getLocationLat())
-                .destinationLng(warehouse.getLocationLng())
+                .destination(destination.getLocation())
+                .destinationLat(destination.getLocationLat())
+                .destinationLng(destination.getLocationLng())
                 .price(Math.round(registerLogisticsRequest.getCost()))
                 .weight(Math.round(registerLogisticsRequest.getWeight()))
                 .deadline(registerLogisticsRequest.getDeadline())
                 .operationDistance(Math.round(distance))
                 .productStatus(ProductStatus.WAITING)
-                .warehouse(warehouse)
+                .warehouse(userWarehouse) // 화주의 창고 정보(화주는 창고를 하나만 가질 수 있음)
                 .build();
 
         // 엔티티 저장

@@ -8,4 +8,6 @@ public interface ProductRepositoryCustom {
     Slice<Product> getLogisticsMatchingListRequest(
             Pageable pageable, Long maxWeight, Long minWeight,
             int sortPrice, String warehouseKeyword, int sortOperationDistance);
+
+    Slice<Product> getApprovingList(Pageable pageable);
 }
