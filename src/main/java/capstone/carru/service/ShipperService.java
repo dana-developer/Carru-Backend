@@ -24,7 +24,7 @@ public class ShipperService {
 
     // 거리 계산 메소드
     private double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
-        double earthRadius = 6371; // 지구 반지름 (km)
+        double earthRadius = 6371;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLng = Math.toRadians(lng2 - lng1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -36,12 +36,10 @@ public class ShipperService {
 
     @Transactional
     public void registerLogistics(String email, RegisterLogisticsRequest registerLogisticsRequest) {
-        // 창고 정보를 받아옴
+        User user = userService.validateUser(email);
+
         Warehouse warehouse = warehouseRepository.findById(registerLogisticsRequest.getWarehouseId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 창고를 찾을 수 없습니다."));
-
-        // 화주 정보 조회
-        User user = userService.validateUser(email);
 
         // 거리 계산
         double distance = calculateDistance(
@@ -51,7 +49,6 @@ public class ShipperService {
                 warehouse.getLocationLng().doubleValue()
         );
 
-        // Product 엔티티를 Builder를 사용하여 생성
         Product product = Product.builder()
                 .name(registerLogisticsRequest.getName())
                 .destination(warehouse.getLocation())
@@ -65,24 +62,28 @@ public class ShipperService {
                 .warehouse(warehouse)
                 .build();
 
-        // 엔티티 저장
         productRepository.save(product);
     }
 
     @Transactional(readOnly = true)
     public List<PendingLogisticsListResponse> getPendingLogistics(String email) {
         User user = userService.validateUser(email);
+
         List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatus(user, ProductStatus.WAITING);
 
         return products.stream()
-                .map(product -> new PendingLogisticsListResponse(
-                        user.getLocation(),
-                        product.getDestination(),
-                        product.getWeight(),
-                        product.getPrice(),
-                        product.getOperationDistance(),
-                        product.getOperationDistance()/50,
-                        product.getDeadline()))
+                .map(product -> {
+                    Warehouse warehouse = product.getWarehouse();
+                    return new PendingLogisticsListResponse(
+                            warehouse.getName(),
+                            product.getDestination(),
+                            product.getWeight(),
+                            product.getPrice(),
+                            product.getOperationDistance(),
+                            product.getOperationDistance()/50,
+                            product.getDeadline()
+                    );
+                })
                 .toList();
     }
 }
