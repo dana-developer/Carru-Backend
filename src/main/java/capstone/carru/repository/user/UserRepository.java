@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
     Optional<User> findByEmailAndDeletedDateIsNull(String email);
+    Optional<User> findByIdAndDeletedDateIsNullAndApprovedDateIsNull(Long id);
 }
