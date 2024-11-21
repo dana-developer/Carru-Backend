@@ -34,4 +34,14 @@ public class ManagerService {
 
         return users.map(GetApprovingListResponse::of);
     }
+
+    @Transactional
+    public void approveUser(String email, Long userId) {
+        userService.validateUser(email);
+
+        User user = userRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNull(userId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID));
+
+        user.updateApprovedDate();
+    }
 }
