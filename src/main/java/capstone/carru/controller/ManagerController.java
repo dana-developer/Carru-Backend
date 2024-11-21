@@ -1,7 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.User.GetApprovingListResponse;
+import capstone.carru.dto.User.GetApprovingUserListResponse;
 import capstone.carru.service.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @Operation(summary = "사용자 가입 미승인 목록 조회", description = "사용자 가입 미승인 목록을 조회할 수 있습니다. listType = 0(화물기사), 1(화주)")
-    @GetMapping("/v1/manager/approvingList")
-    public ApiResponse<Slice<GetApprovingListResponse>> getApprovingList(
+    @GetMapping("/v1/manager/approvingList/user")
+    public ApiResponse<Slice<GetApprovingUserListResponse>> getApprovingList(
             Authentication authentication,
             @RequestParam("listType") int listType, Pageable pageable) {
         String email = authentication.getName();
@@ -29,7 +29,7 @@ public class ManagerController {
     }
 
     @Operation(summary = "사용자 가입 승인", description = "사용자 가입을 승인할 수 있습니다. listType = 0(화물기사), 1(화주)")
-    @PatchMapping("/v1/manager/approvingList/{userId}")
+    @PatchMapping("/v1/manager/approvingList/user/{userId}")
     public ApiResponse<String> approveUser(
             Authentication authentication, @PathVariable Long userId) {
         String email = authentication.getName();

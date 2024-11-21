@@ -7,15 +7,15 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetApprovingListResponse {
+public class GetApprovingUserListResponse {
     private Long userId;
     private String email;
     private String name;
     private String phoneNumber;
     private LocalDateTime createdAt; // 가입일
 
-    public static GetApprovingListResponse of(User user) {
-        return GetApprovingListResponse.builder()
+    public static GetApprovingUserListResponse of(User user) {
+        return GetApprovingUserListResponse.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
