@@ -1,7 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.shipper.PendingLogisticsResponse;
+import capstone.carru.dto.shipper.PendingLogisticsListResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
 import capstone.carru.dto.shipper.SearchWarehouseResponse;
 import capstone.carru.entity.Warehouse;
@@ -39,11 +39,11 @@ public class ShipperController {
         return ApiResponse.success(searchWarehouseRequests);
     }
 
-    @Operation(summary = "미승인 물류 리스트 조회", description = "해당 화주가 등록했으나 관리자 승인 대기 중인 물류 리스트를 조회합니다.")
+    @Operation(summary = "미승인 물류 리스트 조회", description = "미승인 물류 리스트를 조회합니다.")
     @GetMapping("/v1/shipper/logistics/pending")
-    public ApiResponse<List<PendingLogisticsResponse>> getPendingLogistics(Authentication authentication) {
+    public ApiResponse<List<PendingLogisticsListResponse>> getPendingLogistics(Authentication authentication) {
         String email = authentication.getName();
-        List<PendingLogisticsResponse> pendingLogistics = shipperService.getPendingLogistics(email);
+        List<PendingLogisticsListResponse> pendingLogistics = shipperService.getPendingLogistics(email);
         return ApiResponse.success(pendingLogistics);
     }
 }

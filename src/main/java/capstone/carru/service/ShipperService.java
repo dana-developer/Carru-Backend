@@ -1,6 +1,6 @@
 package capstone.carru.service;
 
-import capstone.carru.dto.shipper.PendingLogisticsResponse;
+import capstone.carru.dto.shipper.PendingLogisticsListResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
@@ -70,12 +70,12 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    public List<PendingLogisticsResponse> getPendingLogistics(String email) {
+    public List<PendingLogisticsListResponse> getPendingLogistics(String email) {
         User user = userService.validateUser(email);
         List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatus(user, ProductStatus.WAITING);
 
         return products.stream()
-                .map(product -> new PendingLogisticsResponse(
+                .map(product -> new PendingLogisticsListResponse(
                         user.getLocation(),
                         product.getDestination(),
                         product.getWeight(),
