@@ -1,5 +1,6 @@
 package capstone.carru.service;
 
+import capstone.carru.dto.shipper.PendingLogisticsResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
@@ -66,5 +67,22 @@ public class ShipperService {
 
         // 엔티티 저장
         productRepository.save(product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PendingLogisticsResponse> getPendingLogistics(String email) {
+        User user = userService.validateUser(email);
+        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatus(user, ProductStatus.WAITING);
+
+        return products.stream()
+                .map(product -> new PendingLogisticsResponse(
+                        user.getLocation(),
+                        product.getDestination(),
+                        product.getWeight(),
+                        product.getPrice(),
+                        product.getOperationDistance(),
+                        product.getOperationDistance()/50,
+                        product.getDeadline()))
+                .toList();
     }
 }
