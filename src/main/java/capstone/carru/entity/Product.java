@@ -89,6 +89,10 @@ public class Product extends BaseTimeEntity{
         this.productStatus = productStatus;
     }
 
+    public void updateApprovedDate() {
+        this.approvedDate = LocalDateTime.now();
+    }
+
     public void updateDetails(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
                                  Long price, Long weight, LocalDateTime deadline, Long operationDistance, Warehouse warehouse) {
         this.name = name;
