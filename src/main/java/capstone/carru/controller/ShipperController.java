@@ -63,4 +63,15 @@ public class ShipperController {
         shipperService.deletePendingLogistics(email, id);
         return ApiResponse.success("미승인 물류가 삭제되었습니다.");
     }
+
+    @Operation(summary = "미승인 물류 수정", description = "미승인 물류를 수정합니다.")
+    @PutMapping("/v1/shipper/logistics/pending/{id}")
+    public ApiResponse<String> updatePendingLogistics(
+            Authentication authentication,
+            @PathVariable Long id,
+            @RequestBody RegisterLogisticsRequest updateRequest) {
+        String email = authentication.getName();
+        shipperService.updatePendingLogistics(email, id, updateRequest);
+        return ApiResponse.success("미승인 물류가 수정되었습니다.");
+    }
 }

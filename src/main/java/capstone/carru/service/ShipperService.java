@@ -119,4 +119,38 @@ public class ShipperService {
 
         productRepository.delete(logistics);
     }
+
+    @Transactional
+    public void updatePendingLogistics(String email, Long id, RegisterLogisticsRequest updateRequest) {
+        User user = userService.validateUser(email);
+
+        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndApprovedDateIsNull(id, email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        Warehouse warehouse = warehouseRepository.findById(updateRequest.getWarehouseId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 창고를 찾을 수 없습니다."));
+
+        // 새로운 거리 계산
+        double distance = calculateDistance(
+                user.getLocationLat().doubleValue(),
+                user.getLocationLng().doubleValue(),
+                warehouse.getLocationLat().doubleValue(),
+                warehouse.getLocationLng().doubleValue()
+        );
+
+        // 업데이트
+        logistics.updateDetails(
+                updateRequest.getName(),
+                warehouse.getLocation(),
+                warehouse.getLocationLat(),
+                warehouse.getLocationLng(),
+                updateRequest.getCost(),
+                updateRequest.getWeight(),
+                updateRequest.getDeadline(),
+                Math.round(distance),
+                warehouse
+        );
+
+        productRepository.save(logistics);
+    }
 }

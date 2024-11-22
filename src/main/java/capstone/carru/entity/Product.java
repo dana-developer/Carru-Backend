@@ -88,4 +88,17 @@ public class Product extends BaseTimeEntity{
     public void updateProductStatus(ProductStatus productStatus) {
         this.productStatus = productStatus;
     }
+
+    public void updateDetails(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
+                                 Long price, Long weight, LocalDateTime deadline, Long operationDistance, Warehouse warehouse) {
+        this.name = name;
+        this.destination = destination;
+        this.destinationLat = destinationLat;
+        this.destinationLng = destinationLng;
+        this.price = price;
+        this.weight = weight;
+        this.deadline = deadline;
+        this.operationDistance = operationDistance;
+        this.warehouse = warehouse;
+    }
 }
