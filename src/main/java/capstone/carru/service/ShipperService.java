@@ -1,5 +1,6 @@
 package capstone.carru.service;
 
+import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.shipper.PendingLogisticsListResponse;
 import capstone.carru.dto.shipper.PendingLogisticsResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
@@ -7,6 +8,7 @@ import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.Warehouse;
 import capstone.carru.entity.status.ProductStatus;
+import capstone.carru.exception.NotFoundException;
 import capstone.carru.repository.product.ProductRepository;
 import capstone.carru.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
@@ -107,5 +109,14 @@ public class ShipperService {
                 product.getOperationDistance()/50,
                 product.getDeadline()
         );
+    }
+
+    @Transactional
+    public void deletePendingLogistics(String email, Long id) {
+        User user = userService.validateUser(email);
+        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndApprovedDateIsNull(id, email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        productRepository.delete(logistics);
     }
 }

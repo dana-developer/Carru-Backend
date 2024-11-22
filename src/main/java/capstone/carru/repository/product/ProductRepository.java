@@ -12,4 +12,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     Optional<Product> findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(Long id);
     List<Product> findAllByWarehouse_UserAndProductStatus(User user, ProductStatus status);
     Optional<Product> findByIdAndProductStatus(Long id, ProductStatus status);
+    Optional<Product> findByIdAndWarehouseUserEmailAndApprovedDateIsNull(Long id, String email);
 }
