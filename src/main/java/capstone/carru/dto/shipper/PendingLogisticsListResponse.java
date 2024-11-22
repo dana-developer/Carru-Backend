@@ -11,8 +11,8 @@ public class PendingLogisticsListResponse {
     private Long productId;
     private String location;
     private String destination;
-    private double weight;
-    private double cost;
+    private Long weight;
+    private Long cost;
     private Long operationDistance;
     private Long operationTime;
     private LocalDateTime deadline;

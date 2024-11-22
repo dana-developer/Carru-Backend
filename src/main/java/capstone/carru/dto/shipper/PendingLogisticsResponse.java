@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 public class PendingLogisticsResponse {
     private String location;
     private String destination;
-    private double weight;
-    private double cost;
+    private Long weight;
+    private Long cost;
     private Long operationDistance;
     private Long operationTime;
     private LocalDateTime deadline;
