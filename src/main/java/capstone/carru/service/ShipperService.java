@@ -76,6 +76,7 @@ public class ShipperService {
                 .map(product -> {
                     Warehouse warehouse = product.getWarehouse();
                     return new PendingLogisticsListResponse(
+                            product.getId(),
                             warehouse.getName(),
                             product.getDestination(),
                             product.getWeight(),
