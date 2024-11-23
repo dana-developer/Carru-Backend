@@ -1,6 +1,7 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.manager.GetApprovedUserListResponse;
 import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovingUserListResponse;
 import capstone.carru.entity.Product;
@@ -68,5 +69,22 @@ public class ManagerService {
 
         product.updateApprovedDate();
         product.updateProductStatus(ProductStatus.APPROVED);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetApprovedUserListResponse> getApprovedUserList(String email, int listType, Pageable pageable) {
+        userService.validateUser(email);
+
+        Slice<User> users;
+
+        if(listType == 0) { // 화물 기사 승인 목록 조회
+             users = userRepository.getApprovedList(pageable, UserStatus.DRIVER);
+        } else if(listType == 1) {  // 화주 승인 목록 조회
+            users = userRepository.getApprovedList(pageable, UserStatus.OWNER);
+        } else {
+            throw new InvalidException(ErrorCode.INVALID);
+        }
+
+        return users.map(GetApprovedUserListResponse::of);
     }
 }

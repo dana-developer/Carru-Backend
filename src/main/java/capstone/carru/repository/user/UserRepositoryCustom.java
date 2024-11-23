@@ -7,4 +7,6 @@ import org.springframework.data.domain.Slice;
 
 public interface UserRepositoryCustom {
     Slice<User> getApprovingList(Pageable pageable, UserStatus userStatus);
+
+    Slice<User> getApprovedList(Pageable pageable, UserStatus userStatus);
 }
