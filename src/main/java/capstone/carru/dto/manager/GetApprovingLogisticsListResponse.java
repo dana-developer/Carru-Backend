@@ -1,4 +1,4 @@
-package capstone.carru.dto.User;
+package capstone.carru.dto.manager;
 
 import capstone.carru.entity.Product;
 import java.time.LocalDateTime;

@@ -1,8 +1,8 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.User.GetApprovingLogisticsListResponse;
-import capstone.carru.dto.User.GetApprovingUserListResponse;
+import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
+import capstone.carru.dto.manager.GetApprovingUserListResponse;
 import capstone.carru.service.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

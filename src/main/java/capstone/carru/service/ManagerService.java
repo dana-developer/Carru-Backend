@@ -1,8 +1,8 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
-import capstone.carru.dto.User.GetApprovingLogisticsListResponse;
-import capstone.carru.dto.User.GetApprovingUserListResponse;
+import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
+import capstone.carru.dto.manager.GetApprovingUserListResponse;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.ProductStatus;
