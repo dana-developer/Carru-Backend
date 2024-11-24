@@ -53,6 +53,21 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
     }
 
+    @Override
+    public Slice<Product> getApprovedList(Pageable pageable) {
+        List<Product> contents = queryFactory.selectFrom(product)
+                .where(
+                        (product.deletedDate.isNull())
+                                .and(product.approvedDate.isNotNull())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(product.createdDate.asc())
+                .fetch();
+
+        return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
+    }
+
     private boolean hasNextPage(List<Product> contents, int pageSize) {
         if (contents.size() > pageSize) {
             contents.remove(pageSize);

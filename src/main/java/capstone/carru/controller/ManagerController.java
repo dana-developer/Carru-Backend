@@ -1,6 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
+import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovedUserListResponse;
 import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovingUserListResponse;
@@ -64,5 +65,13 @@ public class ManagerController {
             @RequestParam("listType") int listType, Pageable pageable) {
         String email = authentication.getName();
         return ApiResponse.success(managerService.getApprovedUserList(email, listType, pageable));
+    }
+
+    @Operation(summary = "물류 승인 목록 조회(물류 매칭)", description = "물류 승인된 목록을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/logistics")
+    public ApiResponse<Slice<GetApprovedLogisticsListResponse>> getApprovedLogisticsList(
+            Authentication authentication, Pageable pageable) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedLogisticsList(email, pageable));
     }
 }

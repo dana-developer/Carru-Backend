@@ -1,6 +1,7 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovedUserListResponse;
 import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovingUserListResponse;
@@ -86,5 +87,14 @@ public class ManagerService {
         }
 
         return users.map(GetApprovedUserListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetApprovedLogisticsListResponse> getApprovedLogisticsList(String email, Pageable pageable) {
+        userService.validateUser(email);
+
+        Slice<Product> products = productRepository.getApprovedList(pageable);
+
+        return products.map(GetApprovedLogisticsListResponse::of);
     }
 }
