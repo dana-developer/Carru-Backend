@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
+
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -91,6 +93,16 @@ public class Product extends BaseTimeEntity{
 
     public void updateApprovedDate() {
         this.approvedDate = LocalDateTime.now();
+    }
+
+    public void setDeletedDate() {
+        try {
+            Field deletedDateField = BaseTimeEntity.class.getDeclaredField("deletedDate");
+            deletedDateField.setAccessible(true); // 접근 권한 변경
+            deletedDateField.set(this, LocalDateTime.now()); // 현재 시간으로 설정
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to set deletedDate", e);
+        }
     }
 
     public void updateDetails(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,

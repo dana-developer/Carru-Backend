@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -79,7 +80,8 @@ public class ShipperService {
     public List<PendingLogisticsListResponse> getPendingLogistics(String email) {
         User user = userService.validateUser(email);
 
-        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatus(user, ProductStatus.WAITING);
+        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.WAITING)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         return products.stream()
                 .map(product -> {
@@ -102,40 +104,33 @@ public class ShipperService {
     public PendingLogisticsResponse getPendingLogisticsDetail(String email, Long id) {
         User user = userService.validateUser(email);
 
-        Product product = productRepository.findByIdAndProductStatus(id, ProductStatus.WAITING)
-                .orElseThrow(() -> new IllegalArgumentException("해당 미승인 물류를 찾을 수 없습니다."));
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.WAITING)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         Warehouse warehouse = product.getWarehouse();
 
-        return new PendingLogisticsResponse(
-                warehouse.getName(),
-                product.getDestination(),
-                product.getWeight(),
-                product.getPrice(),
-                product.getOperationDistance(),
-                product.getOperationDistance()/50,
-                product.getDeadline()
-        );
+        return PendingLogisticsResponse.of(product);
     }
 
     @Transactional
     public void deletePendingLogistics(String email, Long id) {
         User user = userService.validateUser(email);
-        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndApprovedDateIsNull(id, email)
+        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndDeletedDateIsNullAndApprovedDateIsNull(id, email)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        productRepository.delete(logistics);
+        logistics.setDeletedDate();
+        productRepository.save(logistics);
     }
 
     @Transactional
     public void updatePendingLogistics(String email, Long id, RegisterLogisticsRequest updateRequest) {
         User user = userService.validateUser(email);
 
-        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndApprovedDateIsNull(id, email)
+        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndDeletedDateIsNullAndApprovedDateIsNull(id, email)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         Warehouse destination = warehouseRepository.findById(updateRequest.getWarehouseId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 창고를 찾을 수 없습니다."));
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_WAREHOUSE));
 
         Warehouse userWarehouse = warehouseRepository.findFirstByUserAndDeletedDateIsNull(user)
                 .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
