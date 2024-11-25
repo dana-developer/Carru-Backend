@@ -1,6 +1,8 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
+import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListResponse;
+import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovedUserListResponse;
@@ -90,5 +92,21 @@ public class ManagerController {
             Authentication authentication, Pageable pageable, @PathVariable Long userId) {
         String email = authentication.getName();
         return ApiResponse.success(managerService.getApprovedOwnerLogisticsList(email, pageable, userId));
+    }
+
+    @Operation(summary = "화물기사 승인 목록 상세 조회(화물기사의 물류 매칭 목록)", description = "화물기사의 물류 매칭 목록을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/driver/logisticsMatching/{userId}")
+    public ApiResponse<Slice<GetApprovedDriverLogisticsMatchingListResponse>> getApprovedDriverLogisticsMatchingList(
+            Authentication authentication, Pageable pageable, @PathVariable Long userId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedDriverLogisticsMatchingList(email, pageable, userId));
+    }
+
+    @Operation(summary = "화물기사 승인 목록 상세 조회(화물기사의 경로 탐색 목록)", description = "화물기사의 경로 탐색 목록을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/driver/routeMatching/{userId}")
+    public ApiResponse<Slice<GetApprovedDriverRouteMatchingListResponse>> getApprovedDriverRouteMatchingList(
+            Authentication authentication, Pageable pageable, @PathVariable Long userId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedDriverRouteMatchingList(email, pageable, userId));
     }
 }
