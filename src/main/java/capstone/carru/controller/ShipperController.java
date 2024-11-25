@@ -39,9 +39,9 @@ public class ShipperController {
 
     @Operation(summary = "미승인 물류 리스트 조회", description = "미승인 물류 리스트를 조회합니다.")
     @GetMapping("/v1/shipper/logistics/pending")
-    public ApiResponse<List<PendingLogisticsListResponse>> getPendingLogistics(Authentication authentication) {
+    public ApiResponse<List<LogisticsListResponse>> getPendingLogistics(Authentication authentication) {
         String email = authentication.getName();
-        List<PendingLogisticsListResponse> pendingLogistics = shipperService.getPendingLogistics(email);
+        List<LogisticsListResponse> pendingLogistics = shipperService.getPendingLogistics(email);
         return ApiResponse.success(pendingLogistics);
     }
 
@@ -74,9 +74,25 @@ public class ShipperController {
 
     @Operation(summary = "승인된 물류(TODO) 리스트 조회", description = "승인된 물류(TODO) 리스트를 조회합니다.")
     @GetMapping("/v1/shipper/logistics/todo")
-    public ApiResponse<List<TodoLogisticsResponse>> getTodoLogistics(Authentication authentication) {
+    public ApiResponse<List<LogisticsListResponse>> getTodoLogistics(Authentication authentication) {
         String email = authentication.getName();
-        List<TodoLogisticsResponse> todoLogistics = shipperService.getTodoLogistics(email);
+        List<LogisticsListResponse> todoLogistics = shipperService.getTodoLogistics(email);
         return ApiResponse.success(todoLogistics);
+    }
+
+    @Operation(summary = "승인된 물류(INPROGRESS) 리스트 조회", description = "승인된 물류(INPROGRESS) 리스트를 조회합니다.")
+    @GetMapping("/v1/shipper/logistics/inprogress")
+    public ApiResponse<List<LogisticsListResponse>> getInprogressLogistics(Authentication authentication) {
+        String email = authentication.getName();
+        List<LogisticsListResponse> inprogressLogistics = shipperService.getInprogressLogistics(email);
+        return ApiResponse.success(inprogressLogistics);
+    }
+
+    @Operation(summary = "승인된 물류(FINISHED) 리스트 조회", description = "승인된 물류(FINISHED) 리스트를 조회합니다.")
+    @GetMapping("/v1/shipper/logistics/finished")
+    public ApiResponse<List<LogisticsListResponse>> getFinishedLogistics(Authentication authentication) {
+        String email = authentication.getName();
+        List<LogisticsListResponse> finishedLogistics = shipperService.getFinishedLogistics(email);
+        return ApiResponse.success(finishedLogistics);
     }
 }
