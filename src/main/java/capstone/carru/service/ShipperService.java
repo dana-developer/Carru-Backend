@@ -1,17 +1,23 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.shipper.PendingLogisticsListResponse;
+import capstone.carru.dto.shipper.PendingLogisticsResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.Warehouse;
 import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.exception.InvalidException;
+import capstone.carru.exception.NotFoundException;
 import capstone.carru.repository.product.ProductRepository;
 import capstone.carru.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +44,6 @@ public class ShipperService {
         // 창고 정보를 받아옴
         Warehouse destination = warehouseRepository.findById(registerLogisticsRequest.getWarehouseId())
                 .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_WAREHOUSE));
-
         // 화주 정보 조회
         User user = userService.validateUser(email);
 
@@ -59,8 +64,8 @@ public class ShipperService {
                 .destination(destination.getLocation())
                 .destinationLat(destination.getLocationLat())
                 .destinationLng(destination.getLocationLng())
-                .price(Math.round(registerLogisticsRequest.getCost()))
-                .weight(Math.round(registerLogisticsRequest.getWeight()))
+                .price(registerLogisticsRequest.getCost())
+                .weight(registerLogisticsRequest.getWeight())
                 .deadline(registerLogisticsRequest.getDeadline())
                 .operationDistance(Math.round(distance))
                 .productStatus(ProductStatus.WAITING)
@@ -69,5 +74,88 @@ public class ShipperService {
 
         // 엔티티 저장
         productRepository.save(product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PendingLogisticsListResponse> getPendingLogistics(String email) {
+        User user = userService.validateUser(email);
+
+        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.WAITING)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return products.stream()
+                .map(product -> {
+                    Warehouse warehouse = product.getWarehouse();
+                    return new PendingLogisticsListResponse(
+                            product.getId(),
+                            warehouse.getName(),
+                            product.getDestination(),
+                            product.getWeight(),
+                            product.getPrice(),
+                            product.getOperationDistance(),
+                            product.getOperationDistance()/50,
+                            product.getDeadline()
+                    );
+                })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PendingLogisticsResponse getPendingLogisticsDetail(String email, Long id) {
+        User user = userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.WAITING)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        Warehouse warehouse = product.getWarehouse();
+
+        return PendingLogisticsResponse.of(product);
+    }
+
+    @Transactional
+    public void deletePendingLogistics(String email, Long id) {
+        User user = userService.validateUser(email);
+        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndDeletedDateIsNullAndApprovedDateIsNull(id, email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        logistics.updateDeletedDate(LocalDateTime.now());
+        productRepository.save(logistics);
+    }
+
+    @Transactional
+    public void updatePendingLogistics(String email, Long id, RegisterLogisticsRequest updateRequest) {
+        User user = userService.validateUser(email);
+
+        Product logistics = productRepository.findByIdAndWarehouseUserEmailAndDeletedDateIsNullAndApprovedDateIsNull(id, email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        Warehouse destination = warehouseRepository.findById(updateRequest.getWarehouseId())
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_WAREHOUSE));
+
+        Warehouse userWarehouse = warehouseRepository.findFirstByUserAndDeletedDateIsNull(user)
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
+
+        // 새로운 거리 계산
+        double distance = calculateDistance(
+                user.getLocationLat().doubleValue(),
+                user.getLocationLng().doubleValue(),
+                destination.getLocationLat().doubleValue(),
+                destination.getLocationLng().doubleValue()
+        );
+
+        // 업데이트
+        logistics.updateDetails(
+                updateRequest.getName(),
+                destination.getLocation(),
+                destination.getLocationLat(),
+                destination.getLocationLng(),
+                updateRequest.getCost(),
+                updateRequest.getWeight(),
+                updateRequest.getDeadline(),
+                Math.round(distance),
+                userWarehouse
+        );
+
+        productRepository.save(logistics);
     }
 }

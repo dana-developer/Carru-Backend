@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -91,5 +92,18 @@ public class Product extends BaseTimeEntity{
 
     public void updateApprovedDate() {
         this.approvedDate = LocalDateTime.now();
+    }
+
+    public void updateDetails(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
+                                 Long price, Long weight, LocalDateTime deadline, Long operationDistance, Warehouse warehouse) {
+        this.name = name;
+        this.destination = destination;
+        this.destinationLat = destinationLat;
+        this.destinationLng = destinationLng;
+        this.price = price;
+        this.weight = weight;
+        this.deadline = deadline;
+        this.operationDistance = operationDistance;
+        this.warehouse = warehouse;
     }
 }

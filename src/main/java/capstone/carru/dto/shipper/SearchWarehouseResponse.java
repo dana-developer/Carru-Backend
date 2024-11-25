@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @AllArgsConstructor
 public class SearchWarehouseResponse {
-    private Long id;
+    private Long warehouseId;
     private String name;
     private String location;
     private BigDecimal locationLat;
