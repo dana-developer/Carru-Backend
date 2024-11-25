@@ -33,6 +33,23 @@ public class ProductReservationRepositoryCustomImpl implements ProductReservatio
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
     }
 
+    @Override
+    public Slice<Product> getApprovedListByDriver(Long userId, Pageable pageable) {
+        List<Product> contents = queryFactory.selectFrom(product)
+                .join(productReservation).on(productReservation.product.id.eq(product.id))
+                .where(
+                        (productReservation.deletedDate.isNull())
+                                .and(productReservation.product.approvedDate.isNotNull())
+                                .and(productReservation.user.id.eq(userId))
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(productReservation.createdDate.desc())
+                .fetch();
+
+        return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
+    }
+
     private boolean hasNextPage(List<Product> contents, int pageSize) {
         if (contents.size() > pageSize) {
             contents.remove(pageSize);
