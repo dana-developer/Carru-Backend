@@ -1,8 +1,11 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.User.GetApprovingLogisticsListResponse;
-import capstone.carru.dto.User.GetApprovingUserListResponse;
+import capstone.carru.dto.manager.GetApprovedLogisticsListDetailResponse;
+import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
+import capstone.carru.dto.manager.GetApprovedUserListResponse;
+import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
+import capstone.carru.dto.manager.GetApprovingUserListResponse;
 import capstone.carru.service.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +57,38 @@ public class ManagerController {
         String email = authentication.getName();
         managerService.approveLogistics(email, productId);
         return ApiResponse.success();
+    }
+
+    @Operation(summary = "사용자 가입 승인 목록 조회", description = "가입 승인된 사용자 목록을 조회할 수 있습니다. listType = 0(화물기사), 1(화주)")
+    @GetMapping("/v1/manager/approvedList/user")
+    public ApiResponse<Slice<GetApprovedUserListResponse>> getApprovedList(
+            Authentication authentication,
+            @RequestParam("listType") int listType, Pageable pageable) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedUserList(email, listType, pageable));
+    }
+
+    @Operation(summary = "물류 승인 목록 조회", description = "물류 승인된 목록을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/logistics")
+    public ApiResponse<Slice<GetApprovedLogisticsListResponse>> getApprovedLogisticsList(
+            Authentication authentication, Pageable pageable) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedLogisticsList(email, pageable));
+    }
+
+    @Operation(summary = "물류 승인 목록 상세 조회", description = "물류 승인된 목록을 상세 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/logistics/{productId}")
+    public ApiResponse<GetApprovedLogisticsListDetailResponse> getApprovedLogisticsListDetail(
+            Authentication authentication, @PathVariable Long productId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedLogisticsListDetail(email, productId));
+    }
+
+    @Operation(summary = "화주 승인 목록 상세 조회(화주의 물류 목록)", description = "화주의 물류 목록을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/user/{userId}")
+    public ApiResponse<Slice<GetApprovedLogisticsListResponse>> getApprovedUserLogisticsList(
+            Authentication authentication, Pageable pageable, @PathVariable Long userId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedUserLogisticsList(email, pageable, userId));
     }
 }

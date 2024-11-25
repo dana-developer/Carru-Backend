@@ -1,4 +1,4 @@
-package capstone.carru.dto.User;
+package capstone.carru.dto.manager;
 
 import capstone.carru.entity.User;
 import java.time.LocalDateTime;
@@ -7,19 +7,21 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetApprovingUserListResponse {
+public class GetApprovedUserListResponse {
     private Long userId;
-    private String email;
     private String name;
+    private String email;
     private String phoneNumber;
+    private String location; //차고자 또는 창고 위치
     private LocalDateTime createdAt; // 가입일
 
-    public static GetApprovingUserListResponse of(User user) {
-        return GetApprovingUserListResponse.builder()
+    public static GetApprovedUserListResponse of(User user) {
+        return GetApprovedUserListResponse.builder()
                 .userId(user.getId())
-                .email(user.getEmail())
                 .name(user.getName())
+                .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
+                .location(user.getLocation())
                 .createdAt(user.getCreatedDate())
                 .build();
     }

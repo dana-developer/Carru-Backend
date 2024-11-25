@@ -1,4 +1,4 @@
-package capstone.carru.dto.User;
+package capstone.carru.dto.manager;
 
 import capstone.carru.entity.Product;
 import java.time.LocalDateTime;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetApprovingLogisticsListResponse {
+public class GetApprovedLogisticsListResponse {
     private Long logisticsId;
     private String destination;
     private String departure;
@@ -18,8 +18,8 @@ public class GetApprovingLogisticsListResponse {
     private LocalDateTime deadline;
     private String ownerName; //화주 이름
 
-    public static GetApprovingLogisticsListResponse of(Product product) {
-        return GetApprovingLogisticsListResponse.builder()
+    public static GetApprovedLogisticsListResponse of(Product product) {
+        return GetApprovedLogisticsListResponse.builder()
                 .logisticsId(product.getId())
                 .destination(product.getDestination())
                 .departure(product.getWarehouse().getUser().getLocation())

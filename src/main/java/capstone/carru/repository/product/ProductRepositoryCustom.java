@@ -10,4 +10,8 @@ public interface ProductRepositoryCustom {
             int sortPrice, String warehouseKeyword, int sortOperationDistance);
 
     Slice<Product> getApprovingList(Pageable pageable);
+
+    Slice<Product> getApprovedList(Pageable pageable);
+
+    Slice<Product> getApprovedListByUser(Long userId, Pageable pageable);
 }
