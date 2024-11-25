@@ -83,4 +83,12 @@ public class ManagerController {
         String email = authentication.getName();
         return ApiResponse.success(managerService.getApprovedLogisticsListDetail(email, productId));
     }
+
+    @Operation(summary = "화주 승인 목록 상세 조회(화주의 물류 목록)", description = "화주의 물류 목록을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/user/{userId}")
+    public ApiResponse<Slice<GetApprovedLogisticsListResponse>> getApprovedUserLogisticsList(
+            Authentication authentication, Pageable pageable, @PathVariable Long userId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedUserLogisticsList(email, pageable, userId));
+    }
 }

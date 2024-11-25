@@ -123,4 +123,13 @@ public class ManagerService {
 
         return GetApprovedLogisticsListDetailResponse.of(product, driver);
     }
+
+    @Transactional(readOnly = true)
+    public Slice<GetApprovedLogisticsListResponse> getApprovedUserLogisticsList(String email, Pageable pageable, Long userId) {
+        userService.validateUser(email);
+
+        Slice<Product> products = productRepository.getApprovedListByUser(userId, pageable);
+
+        return products.map(GetApprovedLogisticsListResponse::of);
+    }
 }

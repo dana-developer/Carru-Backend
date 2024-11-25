@@ -12,4 +12,6 @@ public interface ProductRepositoryCustom {
     Slice<Product> getApprovingList(Pageable pageable);
 
     Slice<Product> getApprovedList(Pageable pageable);
+
+    Slice<Product> getApprovedListByUser(Long userId, Pageable pageable);
 }
