@@ -125,7 +125,7 @@ public class ManagerService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<GetApprovedLogisticsListResponse> getApprovedUserLogisticsList(String email, Pageable pageable, Long userId) {
+    public Slice<GetApprovedLogisticsListResponse> getApprovedOwnerLogisticsList(String email, Pageable pageable, Long userId) {
         userService.validateUser(email);
 
         Slice<Product> products = productRepository.getApprovedListByUser(userId, pageable);
