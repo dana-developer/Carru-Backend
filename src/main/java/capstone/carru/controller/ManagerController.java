@@ -1,7 +1,9 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
+import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListResponse;
+import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
@@ -108,5 +110,21 @@ public class ManagerController {
             Authentication authentication, Pageable pageable, @PathVariable Long userId) {
         String email = authentication.getName();
         return ApiResponse.success(managerService.getApprovedDriverRouteMatchingList(email, pageable, userId));
+    }
+
+    @Operation(summary = "화물기사 승인 목록 상세 조회(화물기사의 물류 매칭 상세 조회)", description = "화물기사의 경로 탐색 상세사항을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/driver/logisticsMatchingDetail/{productId}")
+    public ApiResponse<GetApprovedDriverLogisticsMatchingListDetailResponse> getApprovedDriverLogisticsMatchingListDetail(
+            Authentication authentication, @PathVariable Long productId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedDriverLogisticsMatchingListDetail(email, productId));
+    }
+
+    @Operation(summary = "화물기사 승인 목록 상세 조회(화물기사의 경로 탐색 상세 조회)", description = "화물기사의 경로 탐색 상세사항을 조회할 수 있습니다.")
+    @GetMapping("/v1/manager/approvedList/driver/routeMatchingDetail/{listId}")
+    public ApiResponse<GetApprovedDriverRouteMatchingListDetailResponse> getApprovedDriverRouteMatchingListDetail(
+            Authentication authentication, @PathVariable Long listId) {
+        String email = authentication.getName();
+        return ApiResponse.success(managerService.getApprovedDriverRouteMatchingListDetail(email, listId));
     }
 }

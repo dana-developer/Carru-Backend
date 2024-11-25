@@ -1,7 +1,9 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListResponse;
+import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
@@ -154,5 +156,26 @@ public class ManagerService {
         Slice<ProductRouteReservation> productRouteReservations = productRouteReservationRepository.getApprovedListByDriver(userId, pageable);
 
         return productRouteReservations.map(GetApprovedDriverRouteMatchingListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public GetApprovedDriverLogisticsMatchingListDetailResponse getApprovedDriverLogisticsMatchingListDetail(String email, Long productId) {
+        userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(productId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return GetApprovedDriverLogisticsMatchingListDetailResponse.of(product);
+    }
+
+    @Transactional(readOnly = true)
+    public GetApprovedDriverRouteMatchingListDetailResponse getApprovedDriverRouteMatchingListDetail(String email, Long listId) {
+        userService.validateUser(email);
+
+        ProductRouteReservation productRouteReservation = productRouteReservationRepository
+                .findByIdAndDeletedDateIsNull(listId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return GetApprovedDriverRouteMatchingListDetailResponse.of(productRouteReservation);
     }
 }
