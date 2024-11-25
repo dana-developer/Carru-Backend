@@ -31,6 +31,22 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
     }
 
+    @Override
+    public Slice<User> getApprovedList(Pageable pageable, UserStatus userStatus) {
+        List<User> contents = queryFactory.selectFrom(user)
+                .where(
+                        (user.deletedDate.isNull())
+                                .and(user.userStatus.eq(userStatus))
+                                .and(user.approvedDate.isNotNull())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(user.createdDate.asc())
+                .fetch();
+
+        return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
+    }
+
     private boolean hasNextPage(List<User> contents, int pageSize) {
         if (contents.size() > pageSize) {
             contents.remove(pageSize);
