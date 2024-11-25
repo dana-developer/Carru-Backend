@@ -1,6 +1,7 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.shipper.TodoLogisticsResponse;
 import capstone.carru.dto.shipper.PendingLogisticsListResponse;
 import capstone.carru.dto.shipper.PendingLogisticsResponse;
 import capstone.carru.dto.shipper.RegisterLogisticsRequest;
@@ -157,5 +158,29 @@ public class ShipperService {
         );
 
         productRepository.save(logistics);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TodoLogisticsResponse> getTodoLogistics(String email) {
+        User user = userService.validateUser(email);
+
+        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.DRIVER_TODO)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return products.stream()
+                .map(product -> {
+                    Warehouse warehouse = product.getWarehouse();
+                    return new TodoLogisticsResponse(
+                            product.getId(),
+                            warehouse.getName(),
+                            product.getDestination(),
+                            product.getWeight(),
+                            product.getPrice(),
+                            product.getOperationDistance(),
+                            product.getOperationDistance()/50,
+                            product.getDeadline()
+                    );
+                })
+                .toList();
     }
 }

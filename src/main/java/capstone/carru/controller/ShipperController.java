@@ -1,10 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.shipper.PendingLogisticsListResponse;
-import capstone.carru.dto.shipper.PendingLogisticsResponse;
-import capstone.carru.dto.shipper.RegisterLogisticsRequest;
-import capstone.carru.dto.shipper.SearchWarehouseResponse;
+import capstone.carru.dto.shipper.*;
 import capstone.carru.entity.Warehouse;
 import capstone.carru.repository.WarehouseRepository;
 import capstone.carru.service.ShipperService;
@@ -73,5 +70,13 @@ public class ShipperController {
         String email = authentication.getName();
         shipperService.updatePendingLogistics(email, id, updateRequest);
         return ApiResponse.success("미승인 물류가 수정되었습니다.");
+    }
+
+    @Operation(summary = "승인된 물류(TODO) 리스트 조회", description = "승인된 물류(TODO) 리스트를 조회합니다.")
+    @GetMapping("/v1/shipper/logistics/todo")
+    public ApiResponse<List<TodoLogisticsResponse>> getTodoLogistics(Authentication authentication) {
+        String email = authentication.getName();
+        List<TodoLogisticsResponse> todoLogistics = shipperService.getTodoLogistics(email);
+        return ApiResponse.success(todoLogistics);
     }
 }
