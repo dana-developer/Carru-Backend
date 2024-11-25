@@ -46,7 +46,7 @@ public class ShipperController {
     }
 
     @Operation(summary = "미승인 물류 상세 조회", description = "미승인 물류의 상세 정보를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/pending/{id}")
+    @GetMapping("/v1/shipper/logistics/pending/{productId}")
     public ApiResponse<PendingLogisticsResponse> getPendingLogisticsDetail(Authentication authentication, @PathVariable Long id) {
         String email = authentication.getName();
         PendingLogisticsResponse detail = shipperService.getPendingLogisticsDetail(email, id);
@@ -54,7 +54,7 @@ public class ShipperController {
     }
 
     @Operation(summary = "미승인 물류 삭제", description = "미승인 물류를 삭제합니다.")
-    @DeleteMapping("/v1/shipper/logistics/pending/{id}")
+    @DeleteMapping("/v1/shipper/logistics/pending/{productId}")
     public ApiResponse<String> deletePendingLogistics(Authentication authentication, @PathVariable Long id) {
         String email = authentication.getName();
         shipperService.deletePendingLogistics(email, id);
@@ -62,7 +62,7 @@ public class ShipperController {
     }
 
     @Operation(summary = "미승인 물류 수정", description = "미승인 물류를 수정합니다.")
-    @PutMapping("/v1/shipper/logistics/pending/{id}")
+    @PutMapping("/v1/shipper/logistics/pending/{productId}")
     public ApiResponse<String> updatePendingLogistics(
             Authentication authentication,
             @PathVariable Long id,
