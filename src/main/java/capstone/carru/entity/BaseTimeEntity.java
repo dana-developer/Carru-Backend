@@ -3,6 +3,8 @@ package capstone.carru.entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,4 +21,8 @@ public class BaseTimeEntity {
     private LocalDateTime modifiedDate;
 
     private LocalDateTime deletedDate;
+
+    public void updateDeletedDate(@NotNull LocalDateTime deletedDate){
+        this.deletedDate = deletedDate;
+    }
 }

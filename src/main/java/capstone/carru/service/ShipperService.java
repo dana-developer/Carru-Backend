@@ -118,7 +118,7 @@ public class ShipperService {
         Product logistics = productRepository.findByIdAndWarehouseUserEmailAndDeletedDateIsNullAndApprovedDateIsNull(id, email)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        logistics.setDeletedDate();
+        logistics.updateDeletedDate(LocalDateTime.now());
         productRepository.save(logistics);
     }
 
