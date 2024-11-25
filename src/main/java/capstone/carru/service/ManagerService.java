@@ -1,16 +1,20 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.manager.GetApprovedLogisticsListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovedUserListResponse;
 import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovingUserListResponse;
 import capstone.carru.entity.Product;
+import capstone.carru.entity.ProductReservation;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.InvalidException;
 import capstone.carru.repository.product.ProductRepository;
+import capstone.carru.repository.productReservation.ProductReservationRepository;
+import capstone.carru.repository.stopOver.StopOverRepository;
 import capstone.carru.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +29,8 @@ public class ManagerService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final ProductRepository productRepository;
+    private final ProductReservationRepository productReservationRepository;
+    private final StopOverRepository stopOverRepository;
 
     @Transactional(readOnly = true)
     public Slice<GetApprovingUserListResponse> getApprovingList(String email, int listType, Pageable pageable) {
@@ -96,5 +102,25 @@ public class ManagerService {
         Slice<Product> products = productRepository.getApprovedList(pageable);
 
         return products.map(GetApprovedLogisticsListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public GetApprovedLogisticsListDetailResponse getApprovedLogisticsListDetail(String email, Long productId) {
+        userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(productId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID));
+
+        User driver =  productReservationRepository.findByProductIdAndDeletedDateIsNull(productId)
+                .map(ProductReservation::getUser)
+                .orElse(null);
+
+        if(driver == null) {
+            driver = stopOverRepository.findFirstByProductId(productId)
+                    .map(stopOver -> stopOver.getProductRouteReservation().getUser())
+                    .orElse(null);
+        }
+
+        return GetApprovedLogisticsListDetailResponse.of(product, driver);
     }
 }
