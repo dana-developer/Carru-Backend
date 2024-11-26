@@ -158,7 +158,7 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    public List<LogisticsListResponse> getApporvedLogistics(String email, int listType) {
+    public List<LogisticsListResponse> getApprovedLogistics(String email, int listType) {
         User user = userService.validateUser(email);
 
         ProductStatus s;

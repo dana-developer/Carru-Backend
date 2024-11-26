@@ -76,7 +76,7 @@ public class ShipperController {
     @GetMapping("/v1/shipper/logistics/approved")
     public ApiResponse<List<LogisticsListResponse>> getApprovedLogistics(Authentication authentication, @RequestParam("listType") int listType) {
         String email = authentication.getName();
-        List<LogisticsListResponse> todoLogistics = shipperService.getApporvedLogistics(email, listType);
+        List<LogisticsListResponse> todoLogistics = shipperService.getApprovedLogistics(email, listType);
         return ApiResponse.success(todoLogistics);
     }
 }
