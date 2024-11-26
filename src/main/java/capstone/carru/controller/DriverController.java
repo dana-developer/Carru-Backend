@@ -9,6 +9,7 @@ import capstone.carru.dto.driver.GetLogisticsMatchingReservingListDetailResponse
 import capstone.carru.dto.driver.GetRouteMatchingReservingListDetailResponse;
 import capstone.carru.dto.driver.GetRouteMatchingResevingListResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
+import capstone.carru.dto.driver.UpdateLocationRequest;
 import capstone.carru.service.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -114,5 +115,14 @@ public class DriverController {
             @PathVariable Long routeMatchingId) {
         String email = authentication.getName();
         return ApiResponse.success(driverService.getLogisticsMatchingReservingListDetail(email, routeMatchingId));
+    }
+
+    @Operation(summary = "차고지 변경", description = "차고지를 변경할 수 있습니다.")
+    @PatchMapping("/v1/driver/location")
+    public ApiResponse<String> updateLocation(Authentication authentication,
+            @RequestBody UpdateLocationRequest updateLocationRequest) {
+        String email = authentication.getName();
+        driverService.updateLocation(email, updateLocationRequest);
+        return ApiResponse.success();
     }
 }
