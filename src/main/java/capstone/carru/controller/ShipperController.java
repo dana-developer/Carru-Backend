@@ -73,7 +73,7 @@ public class ShipperController {
     }
 
     @Operation(summary = "승인된 물류 리스트 조회", description = "승인된 물류 리스트를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/todo")
+    @GetMapping("/v1/shipper/logistics/approved")
     public ApiResponse<List<LogisticsListResponse>> getTodoLogistics(Authentication authentication, @RequestParam("listType") int listType) {
         String email = authentication.getName();
         List<LogisticsListResponse> todoLogistics = shipperService.getApporvedLogistics(email, listType);
