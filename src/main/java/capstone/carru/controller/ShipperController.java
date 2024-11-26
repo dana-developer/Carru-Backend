@@ -29,7 +29,7 @@ public class ShipperController {
 
     @Operation(summary = "창고 검색", description = "키워드를 기반으로 창고를 검색합니다.")
     @GetMapping("/v1/shipper/search")
-    public ApiResponse<List<SearchWarehouseResponse>> searchWarehouse(@RequestParam String keyword) {
+    public ApiResponse<List<SearchWarehouseResponse>> searchWarehouse(@RequestParam("keyword") String keyword) {
         List<Warehouse> warehouses = warehouseRepository.findByNameContainingOrLocationContaining(keyword, keyword);
         List<SearchWarehouseResponse> searchWarehouseRequests = warehouses.stream()
                 .map(SearchWarehouseResponse::fromEntity)
@@ -72,27 +72,11 @@ public class ShipperController {
         return ApiResponse.success("미승인 물류가 수정되었습니다.");
     }
 
-    @Operation(summary = "승인된 물류(TODO) 리스트 조회", description = "승인된 물류(TODO) 리스트를 조회합니다.")
+    @Operation(summary = "승인된 물류 리스트 조회", description = "승인된 물류 리스트를 조회합니다.")
     @GetMapping("/v1/shipper/logistics/todo")
-    public ApiResponse<List<LogisticsListResponse>> getTodoLogistics(Authentication authentication) {
+    public ApiResponse<List<LogisticsListResponse>> getTodoLogistics(Authentication authentication, @RequestParam("listType") int listType) {
         String email = authentication.getName();
-        List<LogisticsListResponse> todoLogistics = shipperService.getTodoLogistics(email);
+        List<LogisticsListResponse> todoLogistics = shipperService.getApporvedLogistics(email, listType);
         return ApiResponse.success(todoLogistics);
-    }
-
-    @Operation(summary = "승인된 물류(INPROGRESS) 리스트 조회", description = "승인된 물류(INPROGRESS) 리스트를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/inprogress")
-    public ApiResponse<List<LogisticsListResponse>> getInprogressLogistics(Authentication authentication) {
-        String email = authentication.getName();
-        List<LogisticsListResponse> inprogressLogistics = shipperService.getInprogressLogistics(email);
-        return ApiResponse.success(inprogressLogistics);
-    }
-
-    @Operation(summary = "승인된 물류(FINISHED) 리스트 조회", description = "승인된 물류(FINISHED) 리스트를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/finished")
-    public ApiResponse<List<LogisticsListResponse>> getFinishedLogistics(Authentication authentication) {
-        String email = authentication.getName();
-        List<LogisticsListResponse> finishedLogistics = shipperService.getFinishedLogistics(email);
-        return ApiResponse.success(finishedLogistics);
     }
 }

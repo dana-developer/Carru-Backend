@@ -158,58 +158,16 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    public List<LogisticsListResponse> getTodoLogistics(String email) {
+    public List<LogisticsListResponse> getApporvedLogistics(String email, int listType) {
         User user = userService.validateUser(email);
 
-        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.DRIVER_TODO)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+        ProductStatus s;
+        if (listType == 0) s = ProductStatus.DRIVER_TODO;
+        else if (listType == 1) s = ProductStatus.DRIVER_INPROGRESS;
+        else if (listType == 2) s = ProductStatus.DRIVER_FINISHED;
+        else throw new InvalidException(ErrorCode.INVALID_PRODUCT_STATUS);
 
-        return products.stream()
-                .map(product -> {
-                    Warehouse warehouse = product.getWarehouse();
-                    return new LogisticsListResponse(
-                            product.getId(),
-                            warehouse.getName(),
-                            product.getDestination(),
-                            product.getWeight(),
-                            product.getPrice(),
-                            product.getOperationDistance(),
-                            product.getOperationDistance()/50,
-                            product.getDeadline()
-                    );
-                })
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<LogisticsListResponse> getInprogressLogistics(String email) {
-        User user = userService.validateUser(email);
-
-        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.DRIVER_INPROGRESS)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
-
-        return products.stream()
-                .map(product -> {
-                    Warehouse warehouse = product.getWarehouse();
-                    return new LogisticsListResponse(
-                            product.getId(),
-                            warehouse.getName(),
-                            product.getDestination(),
-                            product.getWeight(),
-                            product.getPrice(),
-                            product.getOperationDistance(),
-                            product.getOperationDistance()/50,
-                            product.getDeadline()
-                    );
-                })
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<LogisticsListResponse> getFinishedLogistics(String email) {
-        User user = userService.validateUser(email);
-
-        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.DRIVER_FINISHED)
+        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, s)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         return products.stream()
