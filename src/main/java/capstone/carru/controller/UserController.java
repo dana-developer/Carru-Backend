@@ -6,6 +6,7 @@ import capstone.carru.dto.User.GetProfileResponse;
 import capstone.carru.dto.User.LoginRequest;
 import capstone.carru.dto.User.LoginResponse;
 import capstone.carru.dto.User.UpdateNameRequest;
+import capstone.carru.dto.User.GetLocationResponse;
 import capstone.carru.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +55,12 @@ public class UserController {
         String email = authentication.getName();
         userService.updateName(email, updateNameRequest);
         return ApiResponse.success();
+    }
+
+    @Operation(summary = "차고지/물류 창고 조회", description = "차고지/물류 창고를 조회할 수 있습니다.")
+    @GetMapping("/v1/user/location")
+    public ApiResponse<GetLocationResponse> getLocation(Authentication authentication) {
+        String email = authentication.getName();
+        return ApiResponse.success(userService.getLocation(email));
     }
 }
