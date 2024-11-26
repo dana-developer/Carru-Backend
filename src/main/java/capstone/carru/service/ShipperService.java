@@ -1,9 +1,7 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
-import capstone.carru.dto.shipper.PendingLogisticsListResponse;
-import capstone.carru.dto.shipper.PendingLogisticsResponse;
-import capstone.carru.dto.shipper.RegisterLogisticsRequest;
+import capstone.carru.dto.shipper.*;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.Warehouse;
@@ -77,7 +75,7 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    public List<PendingLogisticsListResponse> getPendingLogistics(String email) {
+    public List<LogisticsListResponse> getPendingLogistics(String email) {
         User user = userService.validateUser(email);
 
         List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, ProductStatus.WAITING)
@@ -86,7 +84,7 @@ public class ShipperService {
         return products.stream()
                 .map(product -> {
                     Warehouse warehouse = product.getWarehouse();
-                    return new PendingLogisticsListResponse(
+                    return new LogisticsListResponse(
                             product.getId(),
                             warehouse.getName(),
                             product.getDestination(),
@@ -157,5 +155,35 @@ public class ShipperService {
         );
 
         productRepository.save(logistics);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LogisticsListResponse> getApprovedLogistics(String email, int listType) {
+        User user = userService.validateUser(email);
+
+        ProductStatus s;
+        if (listType == 0) s = ProductStatus.DRIVER_TODO;
+        else if (listType == 1) s = ProductStatus.DRIVER_INPROGRESS;
+        else if (listType == 2) s = ProductStatus.DRIVER_FINISHED;
+        else throw new InvalidException(ErrorCode.INVALID_PRODUCT_STATUS);
+
+        List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, s)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return products.stream()
+                .map(product -> {
+                    Warehouse warehouse = product.getWarehouse();
+                    return new LogisticsListResponse(
+                            product.getId(),
+                            warehouse.getName(),
+                            product.getDestination(),
+                            product.getWeight(),
+                            product.getPrice(),
+                            product.getOperationDistance(),
+                            product.getOperationDistance()/50,
+                            product.getDeadline()
+                    );
+                })
+                .toList();
     }
 }

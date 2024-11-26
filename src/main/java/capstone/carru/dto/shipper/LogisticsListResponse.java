@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class PendingLogisticsListResponse {
+public class LogisticsListResponse {
     private Long productId;
     private String location;
     private String destination;

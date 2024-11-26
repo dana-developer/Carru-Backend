@@ -1,10 +1,7 @@
 package capstone.carru.controller;
 
 import capstone.carru.dto.ApiResponse;
-import capstone.carru.dto.shipper.PendingLogisticsListResponse;
-import capstone.carru.dto.shipper.PendingLogisticsResponse;
-import capstone.carru.dto.shipper.RegisterLogisticsRequest;
-import capstone.carru.dto.shipper.SearchWarehouseResponse;
+import capstone.carru.dto.shipper.*;
 import capstone.carru.entity.Warehouse;
 import capstone.carru.repository.WarehouseRepository;
 import capstone.carru.service.ShipperService;
@@ -32,7 +29,7 @@ public class ShipperController {
 
     @Operation(summary = "창고 검색", description = "키워드를 기반으로 창고를 검색합니다.")
     @GetMapping("/v1/shipper/search")
-    public ApiResponse<List<SearchWarehouseResponse>> searchWarehouse(@RequestParam String keyword) {
+    public ApiResponse<List<SearchWarehouseResponse>> searchWarehouse(@RequestParam("keyword") String keyword) {
         List<Warehouse> warehouses = warehouseRepository.findByNameContainingOrLocationContaining(keyword, keyword);
         List<SearchWarehouseResponse> searchWarehouseRequests = warehouses.stream()
                 .map(SearchWarehouseResponse::fromEntity)
@@ -42,14 +39,14 @@ public class ShipperController {
 
     @Operation(summary = "미승인 물류 리스트 조회", description = "미승인 물류 리스트를 조회합니다.")
     @GetMapping("/v1/shipper/logistics/pending")
-    public ApiResponse<List<PendingLogisticsListResponse>> getPendingLogistics(Authentication authentication) {
+    public ApiResponse<List<LogisticsListResponse>> getPendingLogistics(Authentication authentication) {
         String email = authentication.getName();
-        List<PendingLogisticsListResponse> pendingLogistics = shipperService.getPendingLogistics(email);
+        List<LogisticsListResponse> pendingLogistics = shipperService.getPendingLogistics(email);
         return ApiResponse.success(pendingLogistics);
     }
 
     @Operation(summary = "미승인 물류 상세 조회", description = "미승인 물류의 상세 정보를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/pending/{id}")
+    @GetMapping("/v1/shipper/logistics/pending/{productId}")
     public ApiResponse<PendingLogisticsResponse> getPendingLogisticsDetail(Authentication authentication, @PathVariable Long id) {
         String email = authentication.getName();
         PendingLogisticsResponse detail = shipperService.getPendingLogisticsDetail(email, id);
@@ -57,7 +54,7 @@ public class ShipperController {
     }
 
     @Operation(summary = "미승인 물류 삭제", description = "미승인 물류를 삭제합니다.")
-    @DeleteMapping("/v1/shipper/logistics/pending/{id}")
+    @DeleteMapping("/v1/shipper/logistics/pending/{productId}")
     public ApiResponse<String> deletePendingLogistics(Authentication authentication, @PathVariable Long id) {
         String email = authentication.getName();
         shipperService.deletePendingLogistics(email, id);
@@ -65,7 +62,7 @@ public class ShipperController {
     }
 
     @Operation(summary = "미승인 물류 수정", description = "미승인 물류를 수정합니다.")
-    @PutMapping("/v1/shipper/logistics/pending/{id}")
+    @PutMapping("/v1/shipper/logistics/pending/{productId}")
     public ApiResponse<String> updatePendingLogistics(
             Authentication authentication,
             @PathVariable Long id,
@@ -73,5 +70,13 @@ public class ShipperController {
         String email = authentication.getName();
         shipperService.updatePendingLogistics(email, id, updateRequest);
         return ApiResponse.success("미승인 물류가 수정되었습니다.");
+    }
+
+    @Operation(summary = "승인된 물류 리스트 조회", description = "승인된 물류 리스트를 조회합니다.")
+    @GetMapping("/v1/shipper/logistics/approved")
+    public ApiResponse<List<LogisticsListResponse>> getApprovedLogistics(Authentication authentication, @RequestParam("listType") int listType) {
+        String email = authentication.getName();
+        List<LogisticsListResponse> todoLogistics = shipperService.getApprovedLogistics(email, listType);
+        return ApiResponse.success(todoLogistics);
     }
 }
