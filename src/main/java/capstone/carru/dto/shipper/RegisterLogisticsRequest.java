@@ -13,6 +13,5 @@ public class RegisterLogisticsRequest {
     private Long warehouseId;      // 창고 ID
     private String name;           // 물류 이름
     private Long weight;         // 물류 무게
-    private Long cost;           // 비용
     private LocalDateTime deadline; // 도착기한
 }
