@@ -2,6 +2,7 @@ package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.shipper.*;
+import capstone.carru.entity.ProductReservation;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.Warehouse;
@@ -9,6 +10,7 @@ import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.exception.InvalidException;
 import capstone.carru.exception.NotFoundException;
 import capstone.carru.repository.product.ProductRepository;
+import capstone.carru.repository.productReservation.ProductReservationRepository;
 import capstone.carru.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class ShipperService {
 
     private final UserService userService;
     private final ProductRepository productRepository;
+    private final ProductReservationRepository productReservationRepository;
     private final WarehouseRepository warehouseRepository;
     private final PriceService priceService;
 
@@ -197,5 +200,41 @@ public class ShipperService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         return TodoLogisticsResponse.of(product);
+    }
+
+    @Transactional(readOnly = true)
+    public InprogressLogisticsResponse getInprogressLogisticsDetail(String email, Long id) {
+        User user = userService.validateUser(email);
+
+        // Product 조회
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_INPROGRESS)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        // ProductReservation 조회
+        ProductReservation reservation = productReservationRepository.findByProductIdAndDeletedDateIsNull(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_RESERVATION));
+
+        // User 정보 가져오기
+        User transporter = reservation.getUser();
+
+        return InprogressLogisticsResponse.of(product, transporter);
+    }
+
+    @Transactional(readOnly = true)
+    public FinishedLogisticsResponse getFinishedLogisticsDetail(String email, Long id) {
+        User user = userService.validateUser(email);
+
+        // Product 조회
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_FINISHED)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        // ProductReservation 조회
+        ProductReservation reservation = productReservationRepository.findByProductIdAndDeletedDateIsNull(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_RESERVATION));
+
+        // User 정보 가져오기
+        User transporter = reservation.getUser();
+
+        return FinishedLogisticsResponse.of(product, transporter);
     }
 }
