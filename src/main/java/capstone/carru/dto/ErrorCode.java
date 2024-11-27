@@ -22,6 +22,7 @@ public enum ErrorCode {
     NOT_EXISTS_PRODUCT("NF002", "존재하지 않는 물류입니다."),
     NOT_EXISTS_WAREHOUSE("NF003", "존재하지 않는 창고입니다."),
     NOT_EXISTS_USERWAREHOUSE("NF004", "해당 사용자의 창고가 존재하지 않습니다 또는 화주가 아닙니다."),
+    NOT_EXISTS_RESERVATION("NF005", "존재하지 않는 예약건입니다."),
     /**
      * 500 Internal Server Exception (서버 내부 에러)
      */

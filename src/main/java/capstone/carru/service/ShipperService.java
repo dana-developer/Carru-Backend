@@ -2,6 +2,7 @@ package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
 import capstone.carru.dto.shipper.*;
+import capstone.carru.entity.ProductReservation;
 import capstone.carru.entity.User;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.Warehouse;
@@ -9,6 +10,7 @@ import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.exception.InvalidException;
 import capstone.carru.exception.NotFoundException;
 import capstone.carru.repository.product.ProductRepository;
+import capstone.carru.repository.productReservation.ProductReservationRepository;
 import capstone.carru.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class ShipperService {
 
     private final UserService userService;
     private final ProductRepository productRepository;
+    private final ProductReservationRepository productReservationRepository;
     private final WarehouseRepository warehouseRepository;
     private final PriceService priceService;
 
@@ -190,12 +193,37 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    public TodoLogisticsResponse getTodoLogisticsDetail(String email, Long id) {
+    public ApprovedLogisticsResponse getApprovedLogisticsDetail(String email, Long id, int listType) {
         User user = userService.validateUser(email);
 
-        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_TODO)
+        ProductStatus s;
+        if (listType == 0) s = ProductStatus.DRIVER_TODO;
+        else if (listType == 1) s = ProductStatus.DRIVER_INPROGRESS;
+        else if (listType == 2) s = ProductStatus.DRIVER_FINISHED;
+        else throw new InvalidException(ErrorCode.INVALID_PRODUCT_STATUS);
+
+        // Product 조회
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, s)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        return TodoLogisticsResponse.of(product);
+        if (listType == 0) {
+            return ApprovedLogisticsResponse.builder()
+                    .productName(product.getName())
+                    .warehouseName(product.getWarehouse().getName())
+                    .destination(product.getDestination())
+                    .weight(product.getWeight())
+                    .price(product.getPrice())
+                    .operationDistance(product.getOperationDistance())
+                    .operationTime(product.getOperationDistance() / 50)
+                    .transporterName(null)
+                    .transporterPhoneNumber(null)
+                    .build();
+        } else {
+            ProductReservation reservation = productReservationRepository.findByProductIdAndDeletedDateIsNull(id)
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_RESERVATION));
+            User transporter = reservation.getUser();
+
+            return ApprovedLogisticsResponse.of(product, transporter);
+        }
     }
 }
