@@ -24,6 +24,7 @@ public class ShipperService {
     private final UserService userService;
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
+    private final PriceService priceService;
 
     // 거리 계산 메소드
     private double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
@@ -46,26 +47,27 @@ public class ShipperService {
         User user = userService.validateUser(email);
 
         // 거리 계산
-        double distance = calculateDistance(
+        long distance = Math.round(calculateDistance(
                 user.getLocationLat().doubleValue(),
                 user.getLocationLng().doubleValue(),
                 destination.getLocationLat().doubleValue(),
                 destination.getLocationLng().doubleValue()
-        );
+        ));
 
         Warehouse userWarehouse = warehouseRepository.findFirstByUserAndDeletedDateIsNull(user)
                 .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
 
-        // Product 엔티티를 Builder를 사용하여 생성
+        Long shippingPrice = priceService.calculateShippingPrice(registerLogisticsRequest.getWeight(), distance);
+
         Product product = Product.builder()
                 .name(registerLogisticsRequest.getName())
                 .destination(destination.getLocation())
                 .destinationLat(destination.getLocationLat())
                 .destinationLng(destination.getLocationLng())
-                .price(registerLogisticsRequest.getCost())
+                .price(shippingPrice)
                 .weight(registerLogisticsRequest.getWeight())
                 .deadline(registerLogisticsRequest.getDeadline())
-                .operationDistance(Math.round(distance))
+                .operationDistance(distance)
                 .productStatus(ProductStatus.WAITING)
                 .warehouse(userWarehouse) // 화주의 창고 정보(화주는 창고를 하나만 가질 수 있음)
                 .build();
@@ -132,12 +134,14 @@ public class ShipperService {
                 .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
 
         // 새로운 거리 계산
-        double distance = calculateDistance(
+        long distance = Math.round(calculateDistance(
                 user.getLocationLat().doubleValue(),
                 user.getLocationLng().doubleValue(),
                 destination.getLocationLat().doubleValue(),
                 destination.getLocationLng().doubleValue()
-        );
+        ));
+
+        Long shippingPrice = priceService.calculateShippingPrice(updateRequest.getWeight(), distance);
 
         // 업데이트
         logistics.updateDetails(
@@ -145,10 +149,10 @@ public class ShipperService {
                 destination.getLocation(),
                 destination.getLocationLat(),
                 destination.getLocationLng(),
-                updateRequest.getCost(),
+                shippingPrice,
                 updateRequest.getWeight(),
                 updateRequest.getDeadline(),
-                Math.round(distance),
+                distance,
                 userWarehouse
         );
 

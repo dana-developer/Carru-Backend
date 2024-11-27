@@ -63,13 +63,17 @@ public class User extends BaseTimeEntity{
     private List<ProductRouteReservation> productRouteReservationList = new ArrayList<>();
 
     @Builder
-    public User(String name, String email, String phoneNumber, String password,String location, UserStatus userStatus) {
+    public User(String name, String email, String phoneNumber,
+            String password, String location, UserStatus userStatus,
+            BigDecimal locationLat, BigDecimal locationLng) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.location = location;
         this.userStatus = userStatus;
+        this.locationLat = locationLat;
+        this.locationLng = locationLng;
     }
 
     public void updateName(String name) {
@@ -78,5 +82,11 @@ public class User extends BaseTimeEntity{
 
     public void updateApprovedDate() {
         this.approvedDate = LocalDateTime.now();
+    }
+
+    public void updateLocation(String location, BigDecimal locationLat, BigDecimal locationLng) {
+        this.location = location;
+        this.locationLat = locationLat;
+        this.locationLng = locationLng;
     }
 }

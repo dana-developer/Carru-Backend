@@ -5,6 +5,7 @@ import capstone.carru.dto.User.CreateUserRequest;
 import capstone.carru.dto.User.GetProfileResponse;
 import capstone.carru.dto.User.LoginRequest;
 import capstone.carru.dto.User.UpdateNameRequest;
+import capstone.carru.dto.User.GetLocationResponse;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.NotFoundException;
@@ -56,6 +57,8 @@ public class UserService {
                 .name(createUserRequest.getName())
                 .phoneNumber(createUserRequest.getPhoneNumber())
                 .location(createUserRequest.getLocation())
+                .locationLat(createUserRequest.getLocationLat())
+                .locationLng(createUserRequest.getLocationLng())
                 .userStatus(status)
                 .build();
 
@@ -95,5 +98,11 @@ public class UserService {
     public void updateName(String email, UpdateNameRequest updateNameRequest) {
         User user = validateUser(email);
         user.updateName(updateNameRequest.getName());
+    }
+
+    @Transactional(readOnly = true)
+    public GetLocationResponse getLocation(String email) {
+        User user = validateUser(email);
+        return GetLocationResponse.of(user);
     }
 }

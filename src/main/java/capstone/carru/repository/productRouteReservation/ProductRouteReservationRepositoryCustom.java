@@ -6,4 +6,6 @@ import org.springframework.data.domain.Slice;
 
 public interface ProductRouteReservationRepositoryCustom {
     Slice<ProductRouteReservation> getReservingList(Pageable pageable, String email, String listType);
+
+    Slice<ProductRouteReservation> getApprovedListByDriver(Long userId, Pageable pageable);
 }

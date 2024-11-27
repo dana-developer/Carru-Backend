@@ -1,6 +1,10 @@
 package capstone.carru.service;
 
 import capstone.carru.dto.ErrorCode;
+import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListDetailResponse;
+import capstone.carru.dto.manager.GetApprovedDriverLogisticsMatchingListResponse;
+import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListDetailResponse;
+import capstone.carru.dto.manager.GetApprovedDriverRouteMatchingListResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListDetailResponse;
 import capstone.carru.dto.manager.GetApprovedLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovedUserListResponse;
@@ -8,12 +12,14 @@ import capstone.carru.dto.manager.GetApprovingLogisticsListResponse;
 import capstone.carru.dto.manager.GetApprovingUserListResponse;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.ProductReservation;
+import capstone.carru.entity.ProductRouteReservation;
 import capstone.carru.entity.User;
 import capstone.carru.entity.status.ProductStatus;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.InvalidException;
 import capstone.carru.repository.product.ProductRepository;
 import capstone.carru.repository.productReservation.ProductReservationRepository;
+import capstone.carru.repository.productRouteReservation.ProductRouteReservationRepository;
 import capstone.carru.repository.stopOver.StopOverRepository;
 import capstone.carru.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +37,7 @@ public class ManagerService {
     private final ProductRepository productRepository;
     private final ProductReservationRepository productReservationRepository;
     private final StopOverRepository stopOverRepository;
+    private final ProductRouteReservationRepository productRouteReservationRepository;
 
     @Transactional(readOnly = true)
     public Slice<GetApprovingUserListResponse> getApprovingList(String email, int listType, Pageable pageable) {
@@ -125,11 +132,50 @@ public class ManagerService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<GetApprovedLogisticsListResponse> getApprovedUserLogisticsList(String email, Pageable pageable, Long userId) {
+    public Slice<GetApprovedLogisticsListResponse> getApprovedOwnerLogisticsList(String email, Pageable pageable, Long userId) {
         userService.validateUser(email);
 
         Slice<Product> products = productRepository.getApprovedListByUser(userId, pageable);
 
         return products.map(GetApprovedLogisticsListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetApprovedDriverLogisticsMatchingListResponse> getApprovedDriverLogisticsMatchingList(String email, Pageable pageable, Long userId) {
+        userService.validateUser(email);
+
+        Slice<Product> products = productReservationRepository.getApprovedListByDriver(userId, pageable);
+
+        return products.map(GetApprovedDriverLogisticsMatchingListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<GetApprovedDriverRouteMatchingListResponse> getApprovedDriverRouteMatchingList(String email, Pageable pageable, Long userId) {
+        userService.validateUser(email);
+
+        Slice<ProductRouteReservation> productRouteReservations = productRouteReservationRepository.getApprovedListByDriver(userId, pageable);
+
+        return productRouteReservations.map(GetApprovedDriverRouteMatchingListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public GetApprovedDriverLogisticsMatchingListDetailResponse getApprovedDriverLogisticsMatchingListDetail(String email, Long productId) {
+        userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndApprovedDateIsNotNull(productId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return GetApprovedDriverLogisticsMatchingListDetailResponse.of(product);
+    }
+
+    @Transactional(readOnly = true)
+    public GetApprovedDriverRouteMatchingListDetailResponse getApprovedDriverRouteMatchingListDetail(String email, Long listId) {
+        userService.validateUser(email);
+
+        ProductRouteReservation productRouteReservation = productRouteReservationRepository
+                .findByIdAndDeletedDateIsNull(listId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return GetApprovedDriverRouteMatchingListDetailResponse.of(productRouteReservation);
     }
 }

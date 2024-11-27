@@ -32,6 +32,21 @@ public class ProductRouteReservationRepositoryCustomImpl implements
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
     }
 
+    @Override
+    public Slice<ProductRouteReservation> getApprovedListByDriver(Long userId, Pageable pageable) {
+        List<ProductRouteReservation> contents = queryFactory.selectFrom(productRouteReservation)
+                .where(
+                        (productRouteReservation.deletedDate.isNull())
+                                .and(productRouteReservation.user.id.eq(userId))
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(productRouteReservation.createdDate.desc())
+                .fetch();
+
+        return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
+    }
+
     private boolean hasNextPage(List<ProductRouteReservation> contents, int pageSize) {
         if (contents.size() > pageSize) {
             contents.remove(pageSize);

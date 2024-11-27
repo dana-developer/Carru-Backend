@@ -7,6 +7,7 @@ import capstone.carru.dto.driver.GetLogisticsMatchingReservingListDetailResponse
 import capstone.carru.dto.driver.GetRouteMatchingReservingListDetailResponse;
 import capstone.carru.dto.driver.GetRouteMatchingResevingListResponse;
 import capstone.carru.dto.driver.ReserveRouteMatchingRequest;
+import capstone.carru.dto.driver.UpdateLocationRequest;
 import capstone.carru.entity.Product;
 import capstone.carru.entity.ProductReservation;
 import capstone.carru.entity.ProductRouteReservation;
@@ -267,5 +268,14 @@ public class DriverService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         return GetLogisticsMatchingReservingListDetailResponse.of(productReservation.getProduct());
+    }
+
+    @Transactional
+    public void updateLocation(String email, UpdateLocationRequest updateLocationRequest) {
+        User user = userService.validateUser(email);
+
+        user.updateLocation(updateLocationRequest.getLocation(),
+                updateLocationRequest.getLocationLat(),
+                updateLocationRequest.getLocationLng());
     }
 }
