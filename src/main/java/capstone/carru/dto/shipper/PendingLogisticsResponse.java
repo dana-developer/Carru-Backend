@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class PendingLogisticsResponse {
+    private String productName;
     private String warehouseName;
     private String destination;
     private Long weight;
@@ -22,6 +24,7 @@ public class PendingLogisticsResponse {
     public static PendingLogisticsResponse of(Product product) {
         Warehouse warehouse = product.getWarehouse();
         return PendingLogisticsResponse.builder()
+                .productName(product.getName())
                 .warehouseName(warehouse.getName())
                 .destination(product.getDestination())
                 .weight(product.getWeight())

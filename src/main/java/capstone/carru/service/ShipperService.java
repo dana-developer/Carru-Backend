@@ -107,8 +107,6 @@ public class ShipperService {
         Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.WAITING)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        Warehouse warehouse = product.getWarehouse();
-
         return PendingLogisticsResponse.of(product);
     }
 
@@ -189,5 +187,15 @@ public class ShipperService {
                     );
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TodoLogisticsResponse getTodoLogisticsDetail(String email, Long id) {
+        User user = userService.validateUser(email);
+
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_TODO)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
+
+        return TodoLogisticsResponse.of(product);
     }
 }
