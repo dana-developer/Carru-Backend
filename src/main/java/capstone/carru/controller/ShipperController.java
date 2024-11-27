@@ -79,4 +79,12 @@ public class ShipperController {
         List<LogisticsListResponse> todoLogistics = shipperService.getApprovedLogistics(email, listType);
         return ApiResponse.success(todoLogistics);
     }
+
+    @Operation(summary = "승인된 물류(Todo) 상세 조회", description = "승인된 물류(Todo)의 상세 정보를 조회합니다.")
+    @GetMapping("/v1/shipper/logistics/approved/{productId}")
+    public ApiResponse<TodoLogisticsResponse> getTodoLogisticsDetail(Authentication authentication, @PathVariable Long productId) {
+        String email = authentication.getName();
+        TodoLogisticsResponse detail = shipperService.getTodoLogisticsDetail(email, productId);
+        return ApiResponse.success(detail);
+    }
 }
