@@ -80,27 +80,11 @@ public class ShipperController {
         return ApiResponse.success(todoLogistics);
     }
 
-    @Operation(summary = "승인된 물류(Todo) 상세 조회", description = "승인된 물류(Todo)의 상세 정보를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/approved/todo/{productId}")
-    public ApiResponse<TodoLogisticsResponse> getTodoLogisticsDetail(Authentication authentication, @PathVariable Long productId) {
+    @Operation(summary = "승인된 물류 상세 조회", description = "승인된 물류의 상세 정보를 조회합니다.")
+    @GetMapping("/v1/shipper/logistics/approved/{productId}")
+    public ApiResponse<ApprovedLogisticsResponse> getApprovedLogisticsDetail(Authentication authentication, @PathVariable Long productId, @RequestParam("listType") int listType) {
         String email = authentication.getName();
-        TodoLogisticsResponse detail = shipperService.getTodoLogisticsDetail(email, productId);
-        return ApiResponse.success(detail);
-    }
-
-    @Operation(summary = "승인된 물류(Inprogress) 상세 조회", description = "승인된 물류(Inprogress)의 상세 정보를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/approved/inprogress/{productId}")
-    public ApiResponse<InprogressLogisticsResponse> getInprogressLogisticsDetail(Authentication authentication, @PathVariable Long productId) {
-        String email = authentication.getName();
-        InprogressLogisticsResponse detail = shipperService.getInprogressLogisticsDetail(email, productId);
-        return ApiResponse.success(detail);
-    }
-
-    @Operation(summary = "승인된 물류(Finished) 상세 조회", description = "승인된 물류(Finished)의 상세 정보를 조회합니다.")
-    @GetMapping("/v1/shipper/logistics/approved/finished/{productId}")
-    public ApiResponse<FinishedLogisticsResponse> getFinishedLogisticsDetail(Authentication authentication, @PathVariable Long productId) {
-        String email = authentication.getName();
-        FinishedLogisticsResponse detail = shipperService.getFinishedLogisticsDetail(email, productId);
+        ApprovedLogisticsResponse detail = shipperService.getApprovedLogisticsDetail(email, productId, listType);
         return ApiResponse.success(detail);
     }
 }

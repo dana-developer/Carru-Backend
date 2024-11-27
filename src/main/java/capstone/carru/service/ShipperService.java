@@ -193,48 +193,37 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    public TodoLogisticsResponse getTodoLogisticsDetail(String email, Long id) {
+    public ApprovedLogisticsResponse getApprovedLogisticsDetail(String email, Long id, int listType) {
         User user = userService.validateUser(email);
 
-        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_TODO)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
-
-        return TodoLogisticsResponse.of(product);
-    }
-
-    @Transactional(readOnly = true)
-    public InprogressLogisticsResponse getInprogressLogisticsDetail(String email, Long id) {
-        User user = userService.validateUser(email);
+        ProductStatus s;
+        if (listType == 0) s = ProductStatus.DRIVER_TODO;
+        else if (listType == 1) s = ProductStatus.DRIVER_INPROGRESS;
+        else if (listType == 2) s = ProductStatus.DRIVER_FINISHED;
+        else throw new InvalidException(ErrorCode.INVALID_PRODUCT_STATUS);
 
         // Product 조회
-        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_INPROGRESS)
+        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, s)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        // ProductReservation 조회
-        ProductReservation reservation = productReservationRepository.findByProductIdAndDeletedDateIsNull(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_RESERVATION));
+        if (listType == 0) {
+            return ApprovedLogisticsResponse.builder()
+                    .productName(product.getName())
+                    .warehouseName(product.getWarehouse().getName())
+                    .destination(product.getDestination())
+                    .weight(product.getWeight())
+                    .price(product.getPrice())
+                    .operationDistance(product.getOperationDistance())
+                    .operationTime(product.getOperationDistance() / 50)
+                    .transporterName(null)
+                    .transporterPhoneNumber(null)
+                    .build();
+        } else {
+            ProductReservation reservation = productReservationRepository.findByProductIdAndDeletedDateIsNull(id)
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_RESERVATION));
+            User transporter = reservation.getUser();
 
-        // User 정보 가져오기
-        User transporter = reservation.getUser();
-
-        return InprogressLogisticsResponse.of(product, transporter);
-    }
-
-    @Transactional(readOnly = true)
-    public FinishedLogisticsResponse getFinishedLogisticsDetail(String email, Long id) {
-        User user = userService.validateUser(email);
-
-        // Product 조회
-        Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, ProductStatus.DRIVER_FINISHED)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
-
-        // ProductReservation 조회
-        ProductReservation reservation = productReservationRepository.findByProductIdAndDeletedDateIsNull(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_RESERVATION));
-
-        // User 정보 가져오기
-        User transporter = reservation.getUser();
-
-        return FinishedLogisticsResponse.of(product, transporter);
+            return ApprovedLogisticsResponse.of(product, transporter);
+        }
     }
 }
