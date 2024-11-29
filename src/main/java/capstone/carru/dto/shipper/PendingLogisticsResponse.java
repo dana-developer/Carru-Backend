@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PendingLogisticsResponse {
     private String productName;
+    private Long warehouseId;
     private String warehouseName;
     private String destination;
     private Long weight;
@@ -25,6 +26,7 @@ public class PendingLogisticsResponse {
         Warehouse warehouse = product.getWarehouse();
         return PendingLogisticsResponse.builder()
                 .productName(product.getName())
+                .warehouseId(warehouse.getId())
                 .warehouseName(warehouse.getName())
                 .destination(product.getDestination())
                 .weight(product.getWeight())
