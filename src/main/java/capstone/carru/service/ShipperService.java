@@ -207,10 +207,16 @@ public class ShipperService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
         if (listType == 0) {
+            Warehouse warehouse = product.getWarehouse();
             return ApprovedLogisticsResponse.builder()
                     .productName(product.getName())
-                    .warehouseName(product.getWarehouse().getName())
+                    .warehouseId(warehouse.getId())
+                    .warehouseName(warehouse.getName())
+                    .warehouseLat(warehouse.getLocationLat())
+                    .warehouseLng(warehouse.getLocationLng())
                     .destination(product.getDestination())
+                    .destinationLat(product.getDestinationLat())
+                    .destinationLng(product.getDestinationLng())
                     .weight(product.getWeight())
                     .price(product.getPrice())
                     .operationDistance(product.getOperationDistance())
