@@ -68,6 +68,8 @@ public class Product extends BaseTimeEntity{
     @Column(nullable = false)
     private Long operationDistance; //운행 거리 (km) (물류 등록시 계산)
 
+    private String destinationName; //배송지 이름
+
     @Builder
     public Product(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
                    ProductStatus productStatus, Long price, Long weight,
