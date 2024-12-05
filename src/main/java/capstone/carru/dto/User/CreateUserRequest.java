@@ -35,4 +35,6 @@ public class CreateUserRequest {
     private BigDecimal locationLat;
     
     private BigDecimal locationLng;
+
+    private String warehouseName;
 }
