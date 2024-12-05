@@ -47,7 +47,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .orderBy(product.createdDate.asc())
+                .orderBy(product.createdDate.desc())
                 .fetch();
 
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
@@ -62,7 +62,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .orderBy(product.createdDate.asc())
+                .orderBy(product.createdDate.desc())
                 .fetch();
 
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
@@ -78,7 +78,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .orderBy(product.createdDate.asc())
+                .orderBy(product.createdDate.desc())
                 .fetch();
 
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));

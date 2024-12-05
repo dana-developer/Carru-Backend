@@ -25,7 +25,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .orderBy(user.createdDate.asc())
+                .orderBy(user.createdDate.desc())
                 .fetch();
 
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
@@ -41,7 +41,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .orderBy(user.createdDate.asc())
+                .orderBy(user.createdDate.desc())
                 .fetch();
 
         return new SliceImpl<>(contents, pageable, hasNextPage(contents, pageable.getPageSize()));
