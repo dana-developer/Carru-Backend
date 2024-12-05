@@ -7,8 +7,10 @@ import capstone.carru.dto.User.LoginRequest;
 import capstone.carru.dto.User.UpdateNameRequest;
 import capstone.carru.dto.User.GetLocationResponse;
 import capstone.carru.entity.User;
+import capstone.carru.entity.Warehouse;
 import capstone.carru.entity.status.UserStatus;
 import capstone.carru.exception.NotFoundException;
+import capstone.carru.repository.WarehouseRepository;
 import capstone.carru.repository.user.UserRepository;
 import capstone.carru.exception.InvalidException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final WarehouseRepository warehouseRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional(readOnly = true)
@@ -63,6 +66,17 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        if(userStatus == 1) {
+            Warehouse warehouse = Warehouse.builder()
+                    .user(user)
+                    .location(createUserRequest.getLocation())
+                    .locationLat(createUserRequest.getLocationLat())
+                    .locationLng(createUserRequest.getLocationLng())
+                    .build();
+
+            warehouseRepository.save(warehouse);
+        }
     }
 
     @Transactional(readOnly = true)

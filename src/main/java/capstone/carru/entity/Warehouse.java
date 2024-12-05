@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,4 +39,14 @@ public class Warehouse extends BaseTimeEntity{
 
     @Column(precision = 9, scale = 6)
     private BigDecimal locationLng; //창고 경도
+
+    @Builder
+    public Warehouse(User user, String name, String location,
+            BigDecimal locationLat, BigDecimal locationLng) {
+        this.user = user;
+        this.name = name;
+        this.location = location;
+        this.locationLat = locationLat;
+        this.locationLng = locationLng;
+    }
 }
