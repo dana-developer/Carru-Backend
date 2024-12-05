@@ -70,6 +70,7 @@ public class UserService {
         if(userStatus == 1) {
             Warehouse warehouse = Warehouse.builder()
                     .user(user)
+                    .name(createUserRequest.getWarehouseName())
                     .location(createUserRequest.getLocation())
                     .locationLat(createUserRequest.getLocationLat())
                     .locationLng(createUserRequest.getLocationLng())
