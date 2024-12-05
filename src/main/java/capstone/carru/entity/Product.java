@@ -74,7 +74,7 @@ public class Product extends BaseTimeEntity{
     public Product(String name, String destination, BigDecimal destinationLat, BigDecimal destinationLng,
                    ProductStatus productStatus, Long price, Long weight,
                    LocalDateTime deadline, LocalDateTime approvedDate, Long operationDistance,
-                   Warehouse warehouse) {
+                   Warehouse warehouse, String destinationName) {
         this.name = name;
         this.destination = destination;
         this.destinationLat = destinationLat;
@@ -86,6 +86,7 @@ public class Product extends BaseTimeEntity{
         this.approvedDate = approvedDate;
         this.operationDistance = operationDistance;
         this.warehouse = warehouse;
+        this.destinationName = destinationName;
     }
 
     public void updateProductStatus(ProductStatus productStatus) {
@@ -107,5 +108,12 @@ public class Product extends BaseTimeEntity{
         this.deadline = deadline;
         this.operationDistance = operationDistance;
         this.warehouse = warehouse;
+    }
+
+    public void updateOtherDetails(String name, Long weight, LocalDateTime deadline, Long price) {
+        this.name = name;
+        this.weight = weight;
+        this.deadline = deadline;
+        this.price = price;
     }
 }

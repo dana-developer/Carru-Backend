@@ -73,6 +73,7 @@ public class ShipperService {
                 .operationDistance(distance)
                 .productStatus(ProductStatus.WAITING)
                 .warehouse(userWarehouse) // 화주의 창고 정보(화주는 창고를 하나만 가질 수 있음)
+                .destinationName(destination.getName())
                 .build();
 
         // 엔티티 저장
@@ -130,34 +131,46 @@ public class ShipperService {
         Product logistics = productRepository.findByIdAndWarehouseUserEmailAndDeletedDateIsNullAndApprovedDateIsNull(id, email)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        Warehouse destination = warehouseRepository.findById(updateRequest.getWarehouseId())
-                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_WAREHOUSE));
+        if(updateRequest.getWarehouseId() != null) {
+            Warehouse destination = warehouseRepository.findById(updateRequest.getWarehouseId())
+                    .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_WAREHOUSE));
 
-        Warehouse userWarehouse = warehouseRepository.findFirstByUserAndDeletedDateIsNull(user)
-                .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
+            Warehouse userWarehouse = warehouseRepository.findFirstByUserAndDeletedDateIsNull(user)
+                    .orElseThrow(() -> new InvalidException(ErrorCode.NOT_EXISTS_USERWAREHOUSE));
 
-        // 새로운 거리 계산
-        long distance = Math.round(calculateDistance(
-                user.getLocationLat().doubleValue(),
-                user.getLocationLng().doubleValue(),
-                destination.getLocationLat().doubleValue(),
-                destination.getLocationLng().doubleValue()
-        ));
+            // 새로운 거리 계산
+            long distance = Math.round(calculateDistance(
+                    user.getLocationLat().doubleValue(),
+                    user.getLocationLng().doubleValue(),
+                    destination.getLocationLat().doubleValue(),
+                    destination.getLocationLng().doubleValue()
+            ));
 
-        Long shippingPrice = priceService.calculateShippingPrice(updateRequest.getWeight(), distance);
+            Long shippingPrice = priceService.calculateShippingPrice(updateRequest.getWeight(), distance);
 
-        // 업데이트
-        logistics.updateDetails(
-                updateRequest.getName(),
-                destination.getLocation(),
-                destination.getLocationLat(),
-                destination.getLocationLng(),
-                shippingPrice,
-                updateRequest.getWeight(),
-                updateRequest.getDeadline(),
-                distance,
-                userWarehouse
-        );
+            // 업데이트
+            logistics.updateDetails(
+                    updateRequest.getName(),
+                    destination.getLocation(),
+                    destination.getLocationLat(),
+                    destination.getLocationLng(),
+                    shippingPrice,
+                    updateRequest.getWeight(),
+                    updateRequest.getDeadline(),
+                    distance,
+                    userWarehouse
+            );
+        } else {
+
+            Long shippingPrice = priceService.calculateShippingPrice(updateRequest.getWeight(), logistics.getOperationDistance());
+
+            logistics.updateOtherDetails(
+                    updateRequest.getName(),
+                    updateRequest.getWeight(),
+                    updateRequest.getDeadline(),
+                    shippingPrice
+            );
+        }
 
         productRepository.save(logistics);
     }
