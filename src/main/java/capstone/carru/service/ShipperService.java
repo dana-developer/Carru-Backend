@@ -195,19 +195,20 @@ public class ShipperService {
 
     @Transactional(readOnly = true)
     public ApprovedLogisticsResponse getApprovedLogisticsDetail(String email, Long id, int listType) {
-        User user = userService.validateUser(email);
+        userService.validateUser(email);
 
-        ProductStatus s;
+        ProductStatus s = null;
         if (listType == 0) s = ProductStatus.DRIVER_TODO;
         else if (listType == 1) s = ProductStatus.DRIVER_INPROGRESS;
         else if (listType == 2) s = ProductStatus.DRIVER_FINISHED;
+        else if (listType == 3) s = ProductStatus.APPROVED;
         else throw new InvalidException(ErrorCode.INVALID_PRODUCT_STATUS);
 
         // Product 조회
         Product product = productRepository.findByIdAndDeletedDateIsNullAndProductStatus(id, s)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_EXISTS_PRODUCT));
 
-        if (listType == 0) {
+        if (listType == 3) {
             Warehouse warehouse = product.getWarehouse();
             return ApprovedLogisticsResponse.builder()
                     .productName(product.getName())
