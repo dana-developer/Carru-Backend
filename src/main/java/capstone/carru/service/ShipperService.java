@@ -170,6 +170,7 @@ public class ShipperService {
         if (listType == 0) s = ProductStatus.DRIVER_TODO;
         else if (listType == 1) s = ProductStatus.DRIVER_INPROGRESS;
         else if (listType == 2) s = ProductStatus.DRIVER_FINISHED;
+        else if(listType == 3) s = ProductStatus.APPROVED;
         else throw new InvalidException(ErrorCode.INVALID_PRODUCT_STATUS);
 
         List<Product> products = productRepository.findAllByWarehouse_UserAndProductStatusAndDeletedDateIsNull(user, s)
